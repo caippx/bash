@@ -38,7 +38,7 @@ if [ "${release}" == "centos" ]; then
 	localedef -v -c -i zh_CN -f UTF-8 zh_CN.UTF-8 > /dev/null 2>&1
 	cd /etc
 	rm -rf locale.conf
-	wget https://raw.githubusercontent.com/FunctionClub/LocaleCN/master/locale.conf > /dev/null 2>&1
+	wget https://raw.githubusercontent.com/caippx/bash/master/LocaleCN/locale.conf > /dev/null 2>&1
 	cp locale.conf locale
 	cat locale.conf >> /etc/environment
 
@@ -47,20 +47,20 @@ elif [ "${release}" == "debian" ]; then
 	rm -rf /etc/default/locale
 	rm -rf /etc/default/locale.conf
 	cd /etc/
-	wget https://raw.githubusercontent.com/FunctionClub/LocaleCN/master/locale.gen > /dev/null 2>&1
+	wget https://raw.githubusercontent.com/caippx/bash/master/LocaleCN/locale.gen > /dev/null 2>&1
 	locale-gen
 	cd /etc/default/
-	wget https://raw.githubusercontent.com/FunctionClub/LocaleCN/master/locale.conf > /dev/null 2>&1
+	wget https://raw.githubusercontent.com/caippx/bash/master/LocaleCN/locale.conf > /dev/null 2>&1
 	cp locale.conf locale
 elif [ "${release}" == "ubuntu" ]; then
 		rm -rf /etc/locale.gen
 	rm -rf /etc/default/locale
 	rm -rf /etc/default/locale.conf
 	cd /etc/
-	wget https://raw.githubusercontent.com/FunctionClub/LocaleCN/master/locale.gen > /dev/null 2>&1
+	wget https://raw.githubusercontent.com/caippx/bash/master/LocaleCN/locale.gen > /dev/null 2>&1
 	locale-gen
 	cd /etc/default/
-	wget https://raw.githubusercontent.com/FunctionClub/LocaleCN/master/locale.conf > /dev/null 2>&1
+	wget https://raw.githubusercontent.com/caippx/bash/master/LocaleCN/locale.conf > /dev/null 2>&1
 	cp locale.conf locale
 fi
 
