@@ -11,5 +11,6 @@ https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=b51b95c
 echo && stty erase '^H' && read -p "输入code: " code
 python3 OneList.py << EOF
 $code
+
 EOF
 python3 app.py &
