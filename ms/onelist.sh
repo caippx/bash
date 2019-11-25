@@ -13,4 +13,6 @@ python3 OneList.py << EOF
 $code
 
 EOF
-python3 app.py &
+
+echo "请运行 python3 app.py 测试"
+#python3 app.py &
