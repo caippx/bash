@@ -12,15 +12,14 @@ sed -i "s#\"nginx/\"#\"$name/\"#" src/core/nginx.h
 sed -i "s#Server: nginx#Server: $name#" src/http/ngx_http_header_filter_module.c
 sed -i "s#\"<hr><center>nginx<\/center>\"#\"<hr><center>$name<\/center>\"#" src/http/ngx_http_special_response.c
 sed -i "s#server: nginx#server: $name#" src/http/v2/ngx_http_v2_filter_module.c
-mkdir -p /etc/nginx
+mkdir -p ${nginx_install_dir}
 wget https://www.openssl.org/source/openssl-1.1.1d.tar.gz && tar -zxf openssl-1.1.1d.tar.gz
 ./configure --prefix=${nginx_install_dir} --user=www --group=www \
 --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-http_gzip_static_module \
 --with-http_realip_module --with-http_flv_module --with-http_mp4_module \
 --with-openssl=./openssl-1.1.1d --with-pcre --with-pcre-jit --with-ld-opt='-ljemalloc' --with-http_sub_module
 make && make install
-cd ~ && rm -rf nginx-1.17.6.tar.gz nginx-1.17.6 
-
+cd ~ && rm -rf nginx-1.17.6.tar.gz nginx-1.17.6
 [ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=${nginx_install_dir}/sbin:\$PATH" >> /etc/profile
 [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep ${nginx_install_dir} /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=${nginx_install_dir}/sbin:\1@" /etc/profile
 . /etc/profile
@@ -28,3 +27,4 @@ wget -P /lib/systemd/system/ https://raw.githubusercontent.com/caippx/bash/maste
 sed -i "s@/usr/local/nginx@${nginx_install_dir}@g" /lib/systemd/system/nginx.service
 systemctl enable nginx
 mv ${nginx_install_dir}/conf/nginx.conf{,_bk}
+wget -P ${nginx_install_dir}/conf https://raw.githubusercontent.com/caippx/bash/master/nginx/nginx.conf
