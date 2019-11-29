@@ -1,5 +1,6 @@
 #!/bin/bash
 
+nginx_install_dir="/etc/nginx"
 apt-get install libpcre3-dev libaio1 libjemalloc-dev -y
 apt-get install -y gcc g++ make zip lrzsz psmisc autoconf curl libxml2 libxml2-dev libssl-dev bzip2 libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libgmp-dev libmcrypt-dev libreadline6-dev libsnmp-dev libxslt1-dev libcurl4-openssl-dev pkg-config libssl-dev libzip-dev dnsutils
 groupadd -r www
@@ -13,16 +14,17 @@ sed -i "s#\"<hr><center>nginx<\/center>\"#\"<hr><center>$name<\/center>\"#" src/
 sed -i "s#server: nginx#server: $name#" src/http/v2/ngx_http_v2_filter_module.c
 mkdir -p /etc/nginx
 wget https://www.openssl.org/source/openssl-1.1.1d.tar.gz && tar -zxf openssl-1.1.1d.tar.gz
-./configure --prefix=/etc/nginx --user=www --group=www \
+./configure --prefix=${nginx_install_dir} --user=www --group=www \
 --with-http_stub_status_module --with-http_v2_module --with-http_ssl_module --with-http_gzip_static_module \
 --with-http_realip_module --with-http_flv_module --with-http_mp4_module \
 --with-openssl=./openssl-1.1.1d --with-pcre --with-pcre-jit --with-ld-opt='-ljemalloc' --with-http_sub_module
 make && make install
 cd ~ && rm -rf nginx-1.17.6.tar.gz nginx-1.17.6 
 
-[ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=/etc/nginx/sbin:\$PATH" >> /etc/profile
-[ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep /etc/nginx /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=/etc/nginx/sbin:\1@" /etc/profile
+[ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=${nginx_install_dir}/sbin:\$PATH" >> /etc/profile
+[ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep ${nginx_install_dir} /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=${nginx_install_dir}/sbin:\1@" /etc/profile
 . /etc/profile
 wget -P /lib/systemd/system/ https://raw.githubusercontent.com/caippx/bash/master/nginx/nginx.service
-sed -i "s@/usr/local/nginx@/etc/nginx@g" /lib/systemd/system/nginx.service
+sed -i "s@/usr/local/nginx@${nginx_install_dir}@g" /lib/systemd/system/nginx.service
 systemctl enable nginx
+mv ${nginx_install_dir}/conf/nginx.conf{,_bk}
