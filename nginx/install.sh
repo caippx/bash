@@ -23,5 +23,6 @@ cd ~ && rm -rf nginx-1.17.6.tar.gz nginx-1.17.6
 [ -z "`grep ^'export PATH=' /etc/profile`" ] && echo "export PATH=/etc/nginx/sbin:\$PATH" >> /etc/profile
 [ -n "`grep ^'export PATH=' /etc/profile`" -a -z "`grep /etc/nginx /etc/profile`" ] && sed -i "s@^export PATH=\(.*\)@export PATH=/etc/nginx/sbin:\1@" /etc/profile
 . /etc/profile
+wget -P /lib/systemd/system/ https://raw.githubusercontent.com/caippx/bash/master/nginx/nginx.service
 sed -i "s@/usr/local/nginx@/etc/nginx@g" /lib/systemd/system/nginx.service
 systemctl enable nginx
