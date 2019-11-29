@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 Type=forking
-PIDFile=/run/nginx.pid
+PIDFile=/var/run/nginx.pid
 ExecStartPre=/usr/local/nginx/sbin/nginx -t
 ExecStart=/usr/local/nginx/sbin/nginx
 ExecReload=/usr/local/nginx/sbin/nginx -s reload
