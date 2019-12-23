@@ -1,4 +1,5 @@
 bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/caippx/bash/master/caddy/proxy.sh')
+
 支持Ubuntu16+ debian9+
 
 手动修改替换内容规则
