@@ -109,5 +109,5 @@ runcaddy=`ps -ef | grep -v grep | grep "caddy"`
 }
 
 
-[ ! -f "/etc/caddy/caddy.conf" ] && Caddy_Install && Caddy_Config
+[ ! -f "/etc/caddy/caddy.conf" ] && Caddy_Install
 [ -f "/etc/caddy/caddy.conf" ] && echo "Caddy已经安装 增加新反代配置" &&Caddy_Config
