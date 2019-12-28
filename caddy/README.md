@@ -19,3 +19,7 @@ filter rule {
 
 
 加到domain{}里面 再运行 'ppxcaddy restart' 就可以了
+
+
+ 演示站：
+ https://gg.ppxwo.cf
