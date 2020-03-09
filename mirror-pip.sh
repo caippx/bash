@@ -13,7 +13,7 @@ echo "
 [global]
 index-url=http://mirrors.aliyun.com/pypi/simple/
 trusted-host=mirrors.aliyun.com
-" > pip.conf
+" > .pip/pip.conf
 }
 
 function ubuntu16(){
@@ -36,7 +36,7 @@ echo "
 [global]
 index-url=http://mirrors.aliyun.com/pypi/simple/
 trusted-host=mirrors.aliyun.com
-" > pip.conf
+" > .pip/pip.conf
 }
 
 function ubuntu18(){
@@ -59,5 +59,5 @@ echo "
 [global]
 index-url=http://mirrors.aliyun.com/pypi/simple/
 trusted-host=mirrors.aliyun.com
-" > pip.conf
+" > .pip/pip.conf
 }
