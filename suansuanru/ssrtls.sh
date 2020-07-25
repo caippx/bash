@@ -181,7 +181,8 @@ View_User(){
 }
 
 Install_Caddy(){
-curl https://getcaddy.com | bash -s personal http.cache http.filter >/dev/null 2>&1
+wget -O /usr/bin/caddy https://raw.githubusercontent.com/caippx/caddy-v1/master/caddy
+chmod +x /usr/bin/caddy
 ulimit -n 51200
 mkdir -p /data/www/default
 mkdir -p /etc/caddy/conf.d
