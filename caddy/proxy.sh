@@ -8,7 +8,8 @@ apt install curl zip lrzsz psmisc dnsutils -y
 groupadd -r www
 useradd -r -g www -s /bin/false -d /usr/local/www -M www
 echo "正在安装Caddy..."
-curl https://getcaddy.com | bash -s personal http.cache,http.filter
+wget -O /usr/bin/caddy https://raw.githubusercontent.com/caippx/caddy-v1/master/caddy
+chmod +x /usr/bin/caddy
 ulimit -n 51200
 mkdir -p /data/www/
 mkdir -p /etc/caddy/conf.d
