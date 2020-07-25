@@ -20,7 +20,8 @@ echo && stty erase '^H' && read -p "输入域名: " domain
 [[ $OS == "CentOS" ]] && cmd='yum'
 
 $cmd install curl lrzsz zip unzip psmisc uuid -y
-curl https://getcaddy.com | bash -s personal http.cache,http.filter
+wget -O /usr/bin/caddy https://raw.githubusercontent.com/caippx/caddy-v1/master/caddy
+chmod +x /usr/bin/caddy
 ulimit -n 512000
 mkdir -p /data/www/
 mkdir -p /etc/caddy/conf.d
