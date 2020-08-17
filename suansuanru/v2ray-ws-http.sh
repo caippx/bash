@@ -37,7 +37,8 @@ http://$domain:80 {
 " > /etc/caddy/conf.d/$domain
 mkdir /data/www/$domain
 echo "waiting content ~ " > /data/www/$domain/index.html
-bash <(curl -s -L https://install.direct/go.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-dat-release.sh)
+rm -rf /usr/local/etc/v2ray/*.json
 echo '
 {
   "log": {
@@ -98,7 +99,7 @@ echo '
   "reverse": {},
   "transport": {}
 }
-' > /etc/v2ray/config.json
+' > /usr/local/etc/v2ray/config.json
 killall -9 caddy
 ulimit -n 512000
 nohup caddy -conf=/etc/caddy/caddy.conf -agree -quic >> /tmp/caddy.log 2>&1 &
