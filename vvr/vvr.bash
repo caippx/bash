@@ -34,7 +34,6 @@ net.ipv4.tcp_keepalive_probes = 3
 net.ipv4.tcp_keepalive_time = 900
 net.ipv4.tcp_retries1 = 3
 net.ipv4.tcp_retries2 = 8
-net.ipv4.icmp_echo_ignore_all = 1
 net.ipv4.tcp_timestamps = 1
 net.ipv4.tcp_slow_start_after_idle = 0
 # net.ipv4.tcp_fastopen = 3
