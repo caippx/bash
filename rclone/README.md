@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#install zip unzip first
-
+#install zip unzip first 
+#apt install fuse zip unzip screen -y
 #安装
 curl https://rclone.org/install.sh | sudo bash
 
