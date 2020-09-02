@@ -6,7 +6,7 @@
 curl https://rclone.org/install.sh | sudo bash
 
 #挂载
-rclone mount DriveName:Folder LocalFolder --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000
+rclone mount DriveName:Folder LocalFolder --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000 --vfs-cache-mode writes
 
 #取消挂载
 fusermount -qzu LocalFolder
