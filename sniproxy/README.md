@@ -11,7 +11,7 @@ chmod +x /usr/local/bin/sniproxy<br>
 nohup sniproxy >> /tmp/sni.log 2>&1 &<br>
 
 
-Ver2 支持http和https：<br>
+Ver2 支持http和https[推荐]：<br>
 wget -O /usr/local/bin/sniproxy https://raw.githubusercontent.com/caippx/bash/master/sniproxy/sniproxy_s<br>
 chmod +x /usr/local/bin/sniproxy<br>
 nohup sniproxy >> /tmp/sni.log 2>&1 &<br>
