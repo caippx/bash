@@ -1,0 +1,63 @@
+{
+  "log": {
+        "access": "/var/log/v2ray/access.log",
+        "error": "/var/log/v2ray/error.log",
+        "loglevel": "warning"
+    },
+  "inbounds": [
+    {
+      "port": 8848, 
+      "listen": "127.0.0.1", 
+      "tag": "vmess-in", 
+      "protocol": "vmess", 
+      "settings": {
+        "clients": [
+          {
+            "id": "a3759367-6366-444c-afd1-327406f1ecd0", 
+            "alterId": 233
+          }
+        ]
+      }, 
+      "streamSettings": {
+        "network": "ws", 
+        "wsSettings": {
+          "path": "/ppx/"
+        }
+      }
+    }
+  ], 
+  "outbounds": [
+    {
+      "protocol": "freedom", 
+      "settings": { }, 
+      "tag": "direct"
+    }, 
+    {
+      "protocol": "blackhole", 
+      "settings": { }, 
+      "tag": "blocked"
+    }
+  ], 
+  "dns": {
+    "servers": [
+      "https+local://1.1.1.1/dns-query",
+	  "1.1.1.1",
+	  "1.0.0.1",
+	  "8.8.8.8",
+	  "8.8.4.4",
+	  "localhost"
+    ]
+  },
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "type": "field",
+        "inboundTag": [
+          "vmess-in"
+        ],
+        "outboundTag": "direct"
+      }
+    ]
+  }
+}
