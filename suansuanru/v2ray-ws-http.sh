@@ -37,7 +37,7 @@ http://$domain:80 {
 " > /etc/caddy/conf.d/$domain
 mkdir /data/www/$domain
 echo "waiting content ~ " > /data/www/$domain/index.html
-bash <(curl -s -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-dat-release.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/caippx/bash/master/suansuanru/lajiv2ray-install.sh)
 rm -rf /usr/local/etc/v2ray/*.json
 echo '
 {
