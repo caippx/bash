@@ -5,10 +5,16 @@ GO版 make_install 用于自定义编译
 
 已经编译好的 支持linux amd64：
 
-Ver1 仅支持https 可自定义错误返回地址：https://raw.githubusercontent.com/caippx/bash/master/sniproxy/sniproxy
+Ver1 仅支持https 可自定义错误返回地址：<br>
+wget -O /usr/local/bin/sniproxy https://raw.githubusercontent.com/caippx/bash/master/sniproxy/sniproxy <br>
+chmod +x /usr/local/bin/sniproxy<br>
+nohup sniproxy >> /tmp/sni.log 2>&1 &<br>
 
-Ver2 支持http和https：https://raw.githubusercontent.com/caippx/bash/master/sniproxy/sniproxy_s
 
+Ver2 支持http和https：<br>
+wget -O /usr/local/bin/sniproxy https://raw.githubusercontent.com/caippx/bash/master/sniproxy/sniproxy_s<br>
+chmod +x /usr/local/bin/sniproxy<br>
+nohup sniproxy >> /tmp/sni.log 2>&1 &<br>
 
 bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/caippx/bash/master/sniproxy/instsall.sh')
 
