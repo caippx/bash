@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.5
+    container_name: mariadb-yotter
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: setyourpassword
+      MYSQL_DATABASE: yotter
+      MYSQL_USER: yotter
+      MYSQL_PASSWORD: setyourpassword
+    volumes:
+     - mariadb:/var/lib/mysql
+    healthcheck:
+     test: ["CMD", "mysqladmin", "ping", "--silent"]
+
+  yotter:
+    image: ytorg/yotter:latest
+    container_name: yotter
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"
+    environment:
+      DATABASE_URL: mysql+pymysql://yotter:setyourpassword@mariadb:3306/yotter
+    depends_on:
+      - mariadb
+    volumes:
+     - migrations:/usr/src/app/migrations
+     - ./yotter-config.json:/usr/src/app/yotter-config.json
+
+volumes:
+  mariadb:
+  migrations:
