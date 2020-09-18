@@ -1,0 +1,12 @@
+{
+	"serverName": "hanhanytb.azurewebsites.net",
+	"nitterInstance": "https://nitter.net/",
+	"maxInstanceUsers": 20,
+	"serverLocation": "China",
+	"restrictPublicUsage":true,
+	"nginxVideoStream":true,
+	"maintenance_mode":false,
+	"show_admin_message":false,
+	"admin_message_title":"Message from the admin",
+	"admin_message":"Message from the admin text"
+}
