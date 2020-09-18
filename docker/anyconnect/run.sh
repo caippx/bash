@@ -26,3 +26,5 @@ ocpasswd -g Default ppx <<EOF
 $pwd
 $pwd
 EOF
+
+bash /etc/ocserv/ocserv.d
