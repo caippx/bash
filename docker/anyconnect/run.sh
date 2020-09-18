@@ -1,9 +1,6 @@
 #!/bin/bash
 # Script by MoeClub.org
 
-domain=$DOMAIN
-pwd=$PASSWORD
-
 [ $EUID -ne 0 ] && echo "Error:This script must be run as root!" && exit 1
 EthName=`cat /proc/net/dev |grep ':' |cut -d':' -f1 |sed 's/\s//g' |grep -iv '^lo\|^sit\|^stf\|^gif\|^dummy\|^vmnet\|^vir\|^gre\|^ipip\|^ppp\|^bond\|^tun\|^tap\|^ip6gre\|^ip6tnl\|^teql\|^ocserv\|^vpn' |sed -n '1p'`
 [ -n "$EthName" ] || exit 1
@@ -17,6 +14,15 @@ fi
 
 XCMDS=("wget" "tar" "xz" "nc" "openssl" "certtool")
 for XCMD in "${XCMDS[@]}"; do command -v "$XCMD" >>/dev/null 2>&1; [ $? -ne 0 ] && echo "Not Found $XCMD."; done
+
+osVer="$(dpkg --print-architecture 2>/dev/null)"
+if [ -n "$osVer" -a "$osVer" == "amd64" ]; then
+  debVer="$(cat /etc/issue |grep -io 'Debian.*' |sed -r 's/(.*)/\L\1/' |grep -o '[0-9.]*')"
+  if [ "$debVer" == "9" ]; then
+    bash <(wget --no-check-certificate -4 -qO- 'https://raw.githubusercontent.com/MoeClub/apt/master/bbr/bbr.sh') 0 0
+  fi
+fi
+
 
 mkdir -p /tmp
 PublicIP="$(wget --no-check-certificate -4 -qO- http://checkip.amazonaws.com)"
@@ -47,11 +53,11 @@ tar --overwrite -xvf /tmp/ocserv.tar -C /
 # server cert key file: /etc/ocserv/server.key.pem
 openssl genrsa -out /etc/ocserv/server.key.pem 2048
 # server cert file: /etc/ocserv/server.cert.pem
-openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN=${domain}"
+openssl req -new -x509 -days 3650 -key /etc/ocserv/server.key.pem -out /etc/ocserv/server.cert.pem -subj "/C=/ST=/L=/O=/OU=/CN=${PublicIP}"
 
 # Default User
-UserPasswd=`openssl passwd ${pwd}`
-echo -e "ppx:Default:${UserPasswd}\nppxroute:Route:${UserPasswd}\nNoRoute:ppxnoroute:${UserPasswd}\n" >/etc/ocserv/ocpasswd
+UserPasswd=`openssl passwd MoeClub`
+echo -e "Default:Default:${UserPasswd}\nRoute:Route:${UserPasswd}\nNoRoute:NoRoute:${UserPasswd}\n" >/etc/ocserv/ocpasswd
 
 bash /etc/ocserv/template/client.sh
 
@@ -81,6 +87,11 @@ if [[ -f /etc/security/limits.conf ]]; then
   echo -ne "*\thard\tnofile\t${LIMIT}\n*\tsoft\tnofile\t${LIMIT}\nroot\thard\tnofile\t${LIMIT}\nroot\tsoft\tnofile\t${LIMIT}\n" >>/etc/security/limits.conf
   echo -ne "*\thard\tmemlock\t${LIMIT}\n*\tsoft\tmemlock\t${LIMIT}\nroot\thard\tmemlock\t${LIMIT}\nroot\tsoft\tmemlock\t${LIMIT}\n\n\n" >>/etc/security/limits.conf
 fi
+
+# SSH
+#[ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?Port .*/Port 9527/g" /etc/ssh/sshd_config;
+[ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config;
+[ -f /etc/ssh/sshd_config ] && sed -i "s/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g" /etc/ssh/sshd_config;
 
 # Timezone
 cp -f /usr/share/zoneinfo/PRC /etc/localtime
