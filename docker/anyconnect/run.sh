@@ -85,5 +85,3 @@ fi
 # Timezone
 cp -f /usr/share/zoneinfo/PRC /etc/localtime
 echo "Asia/Shanghai" >/etc/timezone
-
-bash /etc/ocserv/ocserv.d >/dev/null 2>&1 &
