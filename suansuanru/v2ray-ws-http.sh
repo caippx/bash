@@ -104,7 +104,7 @@ killall -9 caddy
 ulimit -n 512000
 nohup caddy -conf=/etc/caddy/caddy.conf -agree -quic >> /tmp/caddy.log 2>&1 &
 service v2ray restart
-uuid=`cat /etc/v2ray/config.json | grep "id" | cut -d '"' -f 4`
+uuid=`cat /usr/local/etc/v2ray/config.json | grep "id" | cut -d '"' -f 4`
 ip=`curl -s http://whatismyip.akamai.com`
 echo "
 连接信息：
