@@ -13,11 +13,11 @@ sed -i "s/Mysql_DataBase/$DATABASE/g" /data/wwwroot/zfaka/conf/application.ini
 echo "
 server {
     listen       80;
-    server_name  $DOMAIN; #换成你的域名
+    server_name  $DOMAIN;
     root /data/wwwroot/zfaka/public
     location ~ \.php$ {
             fastcgi_pass   unix:/usr/local/php/var/run/www-php-fpm.sock;
-            fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+            fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
             include        fastcgi_params;
     }
 }
