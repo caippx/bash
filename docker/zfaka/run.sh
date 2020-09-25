@@ -22,4 +22,7 @@ server {
     }
 }
 " > /etc/nginx/conf.d/zfaka.conf
-certbot --nginx --agree-tos --no-eff-email --email example@$DOMAIN
+certbot --nginx --agree-tos --register-unsafely-without-email --no-eff-email --email example@$DOMAIN <<EOF
+
+
+EOF
