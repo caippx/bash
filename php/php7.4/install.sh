@@ -1,4 +1,7 @@
 #!/bin/bash
+
+groupadd -r www
+useradd -r -g www -s /bin/false -d /usr/local/www -M www
 apt update -y && apt install libonig-dev libsqlite3-dev make zip lrzsz psmisc autoconf curl libxml2 libxml2-dev libssl-dev bzip2 libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libgmp-dev libmcrypt-dev libreadline6-dev libsnmp-dev libxslt1-dev libcurl4-openssl-dev pkg-config libssl-dev libzip-dev dnsutils -y
 mkdir /usr/local/php && cd /usr/local/php
 wget https://od.5tb.nl//Linux/source/php.zip && unzip php.zip
