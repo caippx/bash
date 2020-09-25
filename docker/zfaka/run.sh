@@ -14,7 +14,7 @@ echo "
 server {
     listen       80;
     server_name  $DOMAIN;
-    root /data/wwwroot/zfaka/public
+    root /data/wwwroot/zfaka/public;
     location ~ \.php$ {
             fastcgi_pass   unix:/usr/local/php/var/run/www-php-fpm.sock;
             fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
