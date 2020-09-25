@@ -1,6 +1,7 @@
 #!/bin/bash
 
-
+#删除zip
+rm -rf /data/wwwroot/zfaka/fk.zip
 #修改数据库信息
 sed -i "s/Mysql_Host/$HOST/g" /data/wwwroot/zfaka/conf/application.ini
 sed -i "s/Mysql_Port/$PORT/g" /data/wwwroot/zfaka/conf/application.ini
