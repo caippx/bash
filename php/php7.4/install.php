@@ -9,9 +9,9 @@ export PATH=\$PHP_HOME/bin:\$PATH
 " >> /etc/profile
 source /etc/profile
 
-#设置配置文件和启动文件
+#设置配置文件
 wget -O /usr/local/bin/php-fpm https://od.5tb.nl//Linux/source/init.d.php-fpm
-wget -O /etc/systemd/system/php-fpm.service https://od.5tb.nl//Linux/source/php-fpm.service
 wget -c https://getcomposer.org/composer.phar -O /usr/local/bin/composer
 chmod +x /usr/local/bin/php-fpm
 chmod +x /usr/local/bin/composer
+/usr/local/bin/php-fpm start
