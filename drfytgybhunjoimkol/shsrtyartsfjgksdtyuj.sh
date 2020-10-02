@@ -763,7 +763,7 @@ echo -e "password: $password"
 echo -e "\033[33mIf you cannot access the panel,\033[0m"
 echo -e "\033[33mrelease the following panel port [${panelPort}] in the security group\033[0m"
 echo -e "\033[33m若无法访问面板，请检查防火墙/安全组是否有放行面板[${panelPort}]端口\033[0m"
-echo -e "\033[31m登录后请刷新软件列表 然后重启面板来获得开心的情绪\033[0m"
+echo -e "\033[31m如果商店没有文件 请重启刷新等待一下\033[0m"
 echo -e "=================================================================="
 
 endTime=`date +%s`
