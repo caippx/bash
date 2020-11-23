@@ -1,6 +1,6 @@
 
 
-echo "deb http://ftp.fr.debian.org/debian testing main" >> /etc/apt/sources.list
+echo "deb http://cdn-aws.deb.debian.org/debian testing main" >> /etc/apt/sources.list
 
 apt update -y
 
