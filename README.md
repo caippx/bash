@@ -18,6 +18,7 @@ deb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
   GOlang 和 nodejs<br>
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash<br>
 nvm install 12.18.0<br>
+  #export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node 国内源<br>
 curl -SL https://gitee.com/skiy/golang-install/raw/master/install.sh | bash /dev/stdin -v 1.13.6<br>
 set GOOS=linux<br>
 set GOARCH=s390x<br>
