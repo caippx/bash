@@ -19,9 +19,9 @@ a=`ps -aux|grep $!| grep -v grep`
 
 
 if command -v gost >/dev/null 2>&1; then 
-  run()
+  run
 else 
   echo '先安装Gost' 
-  install_gost()
-  run()
+  install_gost
+  run
 fi
