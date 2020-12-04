@@ -6,7 +6,7 @@ wget https://github.com/ginuerzh/gost/releases/download/v2.11.1/gost-linux-amd64
 mv gost-linux-amd64-2.11.1 /usr/bin/gost && chmod +x /usr/bin/gost
 }
 
-funciont run(){
+function run(){
 echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
 echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
