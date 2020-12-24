@@ -15,7 +15,7 @@ pip3 -V
 ####################Install-TG_DownLoad_Bot####################
 
 
-dnf install libxml2-devel libxslt-devel gcc python3-devel python3 python3-pip
+dnf install libxml2-devel libxslt-devel gcc python3-devel python3 python3-pip texinfo automake transfig openssl-devel
 
 apt install libxml2-dev libxslt-dev gcc python3-dev python3 python3-pip
 
