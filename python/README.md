@@ -19,6 +19,6 @@ dnf install libxml2-devel libxslt-devel gcc python3-devel python3 python3-pip
 
 apt install libxml2-dev libxslt-dev gcc python3-dev python3 python3-pip
 
-git clone https://github.com/magneto261290/magneto-python-aria && cd magneto-python-aria
+git clone https://github.com/lzzy12/python-aria-mirror-bot.git && cd python-aria-mirror-bot
 
-pip3 install -r requirements.txt
+pip3 install -r requirements-cli.txt
