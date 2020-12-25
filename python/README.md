@@ -14,11 +14,15 @@ pip3 -V
 
 ####################Install-TG_DownLoad_Bot####################
 
-
-dnf install libxml2-devel libxslt-devel gcc python3-devel python3 python3-pip texinfo automake transfig openssl-devel
-
-apt install libxml2-dev libxslt-dev gcc python3-dev python3 python3-pip
-
 git clone https://github.com/lzzy12/python-aria-mirror-bot.git && cd python-aria-mirror-bot
 
 pip3 install -r requirements-cli.txt
+
+
+###################S390X-ARIA2C#################
+dnf install libxml2-devel libxslt-devel gcc gcc-c++ python3-devel python3 python3-pip texinfo automake transfig openssl-devel gettext-devel nettle-devel cppunit make cmake psmisc
+
+git clone https://github.com/aria2/aria2.git && cd aria2 && autoreconf -i && ./configure --without-gnutls --with-openssl
+
+make && make install
+
