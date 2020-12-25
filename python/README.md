@@ -20,6 +20,7 @@ pip3 install -r requirements-cli.txt
 
 
 ###################S390X-ARIA2C#################
+
 dnf install libxml2-devel libxslt-devel gcc gcc-c++ python3-devel python3 python3-pip texinfo automake transfig openssl-devel gettext-devel nettle-devel cppunit make cmake psmisc
 
 git clone https://github.com/aria2/aria2.git && cd aria2 && autoreconf -i && ./configure --without-gnutls --with-openssl
