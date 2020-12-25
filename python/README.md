@@ -20,6 +20,9 @@ git clone https://github.com/lzzy12/python-aria-mirror-bot.git && cd python-aria
 
 pip3 install -r requirements-cli.txt
 
+pip3 install -r requirements.txt
+
+python3 generate_drive_token.py
 
 ###################S390X-ARIA2C#################
 
