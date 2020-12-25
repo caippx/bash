@@ -14,6 +14,8 @@ pip3 -V
 
 ####################Install-TG_DownLoad_Bot####################
 
+wget -O /usr/local/bin/aria2c https://ppxbot2.ppxproject.workers.dev/0:/%E8%BD%AF%E4%BB%B6/Linux/s390x/aria2c
+
 git clone https://github.com/lzzy12/python-aria-mirror-bot.git && cd python-aria-mirror-bot
 
 pip3 install -r requirements-cli.txt
