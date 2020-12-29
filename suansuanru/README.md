@@ -23,4 +23,8 @@ nohup gost -L socks5://:55888 >>/dev/null 2>&1 & <br>
 nohup gost -L http://:55888 >>/dev/null 2>&1 & <br>
 nohup gost -L=tcp://:80/1.0.0.1:80 >>/dev/null 2>&1 & <br>
 nohup gost -L=tcp://:443/1.0.0.1:443 >>/dev/null 2>&1 & <br>
-nohup gost -L=udp://:443/1.0.0.1:443 >>/dev/null 2>&1 &
+nohup gost -L=udp://:443/1.0.0.1:443 >>/dev/null 2>&1 & <br>
+
+iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT <br>
+iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT <br>
+iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT <br>
