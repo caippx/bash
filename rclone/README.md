@@ -8,6 +8,8 @@ curl https://rclone.org/install.sh | sudo bash
 #挂载
 rclone mount DriveName:Folder LocalFolder --copy-links --no-gzip-encoding --no-check-certificate --allow-other --allow-non-empty --umask 000 --vfs-cache-mode writes
 
+rclone mount kanpian: /kanpian  --umask 0000 --default-permissions --allow-other --transfers 10 --buffer-size 32M --low-level-retries 200 --dir-cache-time 12h --vfs-read-chunk-size 32M --vfs-read-chunk-size-limit 1G --copy-links --no-gzip-encoding --no-check-certificate --vfs-cache-mode writes
+
 #取消挂载
 fusermount -qzu LocalFolder
 
