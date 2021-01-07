@@ -33,8 +33,9 @@ EOF
 
 curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
 Happy_Bt
-[[ -n $1 ]] && Change_Path $1
-[[ -n $2 ]] && Change_Admin $2
-[[ -n $3 ]] && Change_Passwd $3
+[[ -n $1 ]] && Change_Path $1 >/dev/null 2>&1
+[[ -n $2 ]] && Change_Admin $2 >/dev/null 2>&1
+[[ -n $3 ]] && Change_Passwd $3 >/dev/null 2>&1
+bt restart
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
