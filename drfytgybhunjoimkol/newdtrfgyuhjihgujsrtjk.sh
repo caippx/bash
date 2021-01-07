@@ -8,7 +8,7 @@ echo "True" > /www/server/panel/data/licenes.pl
 }
 
 Change_Path(){
-echo "\/$1" > /www/server/panel/data/admin_path.pl
+echo "/$1" > /www/server/panel/data/admin_path.pl
 }
 
 Change_Admin(){
