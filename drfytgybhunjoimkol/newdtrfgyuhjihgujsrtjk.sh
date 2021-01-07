@@ -20,21 +20,21 @@ echo "/$1" > /www/server/panel/data/admin_path.pl
 Change_Admin(){
 bt << EOF
 6
-$2
+$1
 EOF
 }
 
 Change_Passwd(){
 bt << EOF
 5
-$3
+$1
 EOF
 }
 
 curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
 Happy_Bt
-[[ -n $1 ]] && Change_Path
-[[ -n $2 ]] && Change_Admin
-[[ -n $3 ]] && Change_Passwd
+[[ -n $1 ]] && Change_Path $1
+[[ -n $2 ]] && Change_Admin $2
+[[ -n $3 ]] && Change_Passwd $3
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
