@@ -7,6 +7,12 @@ wget -qO /www/server/panel/data/plugin.json http://www.bt.cn/api/panel/get_soft_
 echo "True" > /www/server/panel/data/licenes.pl
 }
 
+Is_Set_(){
+read -p "设置面板后台入口（留空或者n随机 默认随机）" admin_path
+read -p "设置后台账户（留空或者n随机 默认随机） >3位" admin_
+read -p "设置后台密码（留空或者n随机 默认随机）>5位" admin_pwd
+}
+
 Change_Path(){
 echo "/$1" > /www/server/panel/data/admin_path.pl
 }
