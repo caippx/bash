@@ -30,3 +30,5 @@ Happy_Bt
 [[ -n $1 ]] && Change_Path
 [[ -n $2 ]] && Change_Admin
 [[ -n $3 ]] && Change_Passwd
+iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
+iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
