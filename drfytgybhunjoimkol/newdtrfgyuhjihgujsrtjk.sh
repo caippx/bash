@@ -15,6 +15,7 @@ read -p "设置后台密码（留空或者n随机 默认随机）>5位" admin_pw
 
 Change_Path(){
 echo "/$1" > /www/server/panel/data/admin_path.pl
+echo  "外网面板地址: http://$ip:8888/$1"
 }
 
 Change_Admin(){
@@ -22,6 +23,7 @@ bt << EOF
 6
 $1
 EOF
+echo  "新用户名: $1"
 }
 
 Change_Passwd(){
@@ -29,7 +31,9 @@ bt << EOF
 5
 $1
 EOF
+echo  "新密码: $1"
 }
+ip=`curl -s http://whatismyip.akamai.com/`
 
 curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
 Happy_Bt
@@ -39,3 +43,4 @@ Happy_Bt
 bt restart
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
+
