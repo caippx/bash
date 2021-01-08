@@ -40,6 +40,9 @@ Happy_Bt
 [[ -n $1 ]] && Change_Path $1 >/dev/null 2>&1
 [[ -n $2 ]] && Change_Admin $2 >/dev/null 2>&1
 [[ -n $3 ]] && Change_Passwd $3 >/dev/null 2>&1
+echo "开始安装IP SSL插件"
+wget --no-check-certificate -qO /www/server/panel/plugin/encryption365.zip https://ppxbot2.ppxproject.workers.dev/0:/%E8%BD%AF%E4%BB%B6/Linux/bt/encryption365.zip && cd /www/server/panel/plugin/ && unzip encryption365.zip
+echo "done"
 bt restart
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
