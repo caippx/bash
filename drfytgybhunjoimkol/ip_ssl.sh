@@ -15,6 +15,6 @@ echo "$crt" > $bt_ssl_dir/certificate.pem
 echo "$key" > $bt_ssl_dir/privateKey.pem
 
 #修改端口 
-[[ -n $1 ]] && echo "$1" > /www/server/panel/data/port.pl
+[[ -n $1 ]] && echo "$1" > /www/server/panel/data/port.pl && iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport $1 -j ACCEPT
 
 bt restart
