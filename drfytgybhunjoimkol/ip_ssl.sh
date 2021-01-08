@@ -13,3 +13,5 @@ key=`cat $ssl_dir/privkey.pem`
 
 echo "$crt" > $bt_ssl_dir/certificate.pem
 echo "$key" > $bt_ssl_dir/privateKey.pem
+
+bt restart
