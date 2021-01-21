@@ -16,6 +16,8 @@ echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
 nohup gost -L=tcp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &
 nohup gost -L=udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &
+iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport $local_port -j ACCEPT
+iptables -I INPUT -p udp -m state --state NEW -m udp --dport $local_port -j ACCEPT
 sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
