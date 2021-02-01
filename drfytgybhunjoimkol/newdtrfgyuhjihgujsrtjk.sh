@@ -5,6 +5,8 @@ sed -i "s/time.localtime(ltd)/time.localtime(7955085722)/"  /www/server/panel/BT
 curl -s -o /dev/null www.bt.cn
 wget -qO /www/server/panel/data/plugin.json http://www.bt.cn/api/panel/get_soft_list_test
 echo "True" > /www/server/panel/data/licenes.pl
+echo "True" > /www/server/panel/data/not_recommend.pl
+echo "True" > /www/server/panel/data/not_workorder.pl
 }
 
 Is_Set_(){
