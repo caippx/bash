@@ -37,7 +37,7 @@ apt-get install liblua5.1-0 -y
 curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
 Happy_Bt
 echo "开始安装IP SSL插件"
-wget --no-check-certificate -qO /www/server/panel/plugin/encryption365.zip https://od.xsjdd.com/%E8%BD%AF%E4%BB%B6/Linux/bt/encryption365.zip && cd /www/server/panel/plugin/ && unzip encryption365.zip >/dev/null 2>&1
+wget --no-check-certificate -qO /www/server/panel/plugin/encryption365.zip https://od.xsjdd.com/%E8%BD%AF%E4%BB%B6/Linux/bt/Encryption365_BtPanel_v1.2.zip && cd /www/server/panel/plugin/ && unzip encryption365.zip >/dev/null 2>&1
 echo "done"
 [[ -n $1 ]] && echo  "外网面板地址: http://$ip:8888/$1" && Change_Path $1 >/dev/null 2>&1
 [[ -n $2 ]] && echo  "新用户名: $2" && Change_Admin $2 >/dev/null 2>&1
