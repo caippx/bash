@@ -2,6 +2,7 @@
 Happy_Bt(){
 echo "44.234.251.213 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
 #echo "2600:1f13:98e:6000:fd96:427e:5ac6:bcd3 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
+#2406:da14:812:e400:5fa0:54d0:190:f6d0 
 sed -i "s/time.localtime(ltd)/time.localtime(7955085722)/"  /www/server/panel/BTPanel/__init__.py
 curl -s -o /dev/null www.bt.cn
 wget -qO /www/server/panel/data/plugin.json http://www.bt.cn/api/panel/get_soft_list_test
