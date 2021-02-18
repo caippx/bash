@@ -18,6 +18,7 @@ bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/caipp
 #GOST<br>
 echo "65.52.162.210 raw.githubusercontent.com" >> /etc/hosts<br>
 echo "65.52.162.210 github-releases.githubusercontent.com" >> /etc/hosts<br>
+echo "65.52.162.210 github.com" >> /etc/hosts<br>
 wget https://github.com/ginuerzh/gost/releases/download/v2.11.1/gost-linux-amd64-2.11.1.gz && gunzip gost-linux-amd64-2.11.1.gz<br>
 mv gost-linux-amd64-2.11.1 /usr/bin/gost && chmod +x /usr/bin/gost<br>
 gost -L=rtcp://:8848/remote_ip:8080 <br>
