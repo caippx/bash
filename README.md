@@ -26,3 +26,5 @@ curl -SL https://gitee.com/skiy/golang-install/raw/master/install.sh | bash /dev
 set GOOS=linux<br>
 set GOARCH=s390x<br>
   </p>
+  网易解锁<br>
+docker run --restart=always --name unmusic -d -p 6666:8080 nondanee/unblockneteasemusic
