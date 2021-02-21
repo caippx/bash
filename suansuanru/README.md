@@ -31,3 +31,6 @@ nohup gost -L=udp://:443/1.0.0.1:443 >>/dev/null 2>&1 & <br>
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT <br>
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT <br>
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT <br>
+
+Nat<br>
+wget -O /usr/bin/nat https://raw.githubusercontent.com/caippx/bash/master/suansuanru/nat.sh && chmod +x /usr/bin/nat <br>
