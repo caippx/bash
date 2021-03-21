@@ -49,4 +49,6 @@ service cron reload >/dev/null 2>&1
 bt restart
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 443 -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport 443 -j ACCEPT
+iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT
+iptables -I INPUT -p udp -m state --state NEW -m udp --dport 3306 -j ACCEPT
 
