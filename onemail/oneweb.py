@@ -8,6 +8,7 @@ app=Flask(__name__)
 
 pool = redis.ConnectionPool(host='localhost', port=6379, decode_responses=True)
 emailredis = redis.Redis(db=1)
+parser = argparse.ArgumentParser(description="One Mail Web Api")
 parser.add_argument('-p','--port', default='80')
 args = parser.parse_args()
 web_port = args.port
