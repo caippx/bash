@@ -35,5 +35,5 @@ def allow_ajax(res):
     return response
 
 if __name__ == '__main__':
-    os.system('python3 ./onesmtp.py &')
+    os.system('python3 ./smtp.py &')
     app.run(host='0.0.0.0',port=web_port,use_debugger=False,threaded=True)
