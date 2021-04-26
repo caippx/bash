@@ -10,9 +10,8 @@ listen:
     - 443
 
 forward_rules:
-    cdnjs.cloudflare.com: "*:443"
-    static-mon.yandex.net: "*:443"
-    yastatic.net: "*:443"
-    assetscdn.jable.tv: "*:443"
-    cdn1.theporndude.com: "*:443"
-    
+    "cdnjs.cloudflare.com": "cdnjs.cloudflare.com:443"
+    "static-mon.yandex.net": "static-mon.yandex.net:443"
+    "yastatic.net": "yastatic.net:443"
+    "assetscdn.jable.tv": "assetscdn.jable.tv:443"
+    "cdn1.theporndude.com": "cdn1.theporndude.com:443"
