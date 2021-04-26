@@ -1,0 +1,18 @@
+#timeout: 10
+#
+
+# default destination
+# when no SNI name found 
+# or parse TLS HELLO message failed
+default: 127.0.0.1:8443
+
+listen:
+    - 443
+
+forward_rules:
+    cdnjs.cloudflare.com: "*:443"
+    static-mon.yandex.net: "*:443"
+    yastatic.net: "*:443"
+    assetscdn.jable.tv: "*:443"
+    cdn1.theporndude.com: "*:443"
+    
