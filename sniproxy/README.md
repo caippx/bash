@@ -8,7 +8,7 @@ GO版 make_install 用于自定义编译
 Ver1 仅支持https 可自定义错误返回地址：<br>
 wget -O /usr/local/bin/sniproxy https://raw.githubusercontent.com/caippx/bash/master/sniproxy/sniproxy <br>
 chmod +x /usr/local/bin/sniproxy<br>
-wget -O /usr/local/config.yaml https://raw.githubusercontent.com/caippx/sniproxy/master/config.yaml<br>
+wget -O /usr/local/config.yaml https://raw.githubusercontent.com/caippx/bash/master/sniproxy/config.yaml<br>
 nohup sniproxy -c /usr/local/config.yaml >> /tmp/sni.log 2>&1 &<br>
 
 
