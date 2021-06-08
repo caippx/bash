@@ -9,6 +9,7 @@ wget -qO /www/server/panel/data/plugin.json http://www.bt.cn/api/panel/get_soft_
 echo "True" > /www/server/panel/data/licenes.pl
 echo "True" > /www/server/panel/data/not_recommend.pl
 echo "True" > /www/server/panel/data/not_workorder.pl
+rm -rf /www/server/panel/data/bind.pl
 }
 
 Is_Set_(){
