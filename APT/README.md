@@ -2,6 +2,7 @@
 
 # debian
 apt install apt-transport-https ca-certificates  
+mv sources.list sources.list.b  
 debian10: https://github.com/caippx/bash/blob/master/APT/debian10  
 debian9: https://github.com/caippx/bash/blob/master/APT/debian9  
 debian8: https://github.com/caippx/bash/blob/master/APT/debian8   
