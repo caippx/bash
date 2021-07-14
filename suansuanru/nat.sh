@@ -22,11 +22,11 @@ service rinetd restart
 }
 
 function gogogo(){
-if command -v gost >/dev/null 2>&1; then 
+if command -v rinetd >/dev/null 2>&1; then 
   run
 else 
   echo '先安装Gost' 
-  install_gost
+  install_rinetd
   run
 fi
 }
