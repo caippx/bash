@@ -1,6 +1,9 @@
 # bash
 一些自己写（chao）的jio本
 
+DD:
+bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh') -dd 'https://api.moeclub.org/redirect/win8.1emb_x64.tar.gz'
+
 <p>
   DeBian 10国内源<br>
 deb http://mirrors.aliyun.com/debian/ buster main non-free contrib <br>
