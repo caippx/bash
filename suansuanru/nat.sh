@@ -8,6 +8,7 @@ echo "allow *.*.*.*" >> /etc/rinetd.conf
 
 function list(){
 ps -ef | grep -v grep | grep "rinetd"
+cat /etc/rinetd.conf
 }
 
 function run(){
