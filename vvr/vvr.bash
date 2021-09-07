@@ -1,10 +1,8 @@
 #!/bin/bash
 
-echo && stty erase '^H' && read -p "输入安装的版本(0,1,2): " ver
-[[ -z ${ver} ]] && ver="0"
 bash <(wget --no-check-certificate -qO- "https://raw.githubusercontent.com/MoeClub/BBR/master/install.sh")
 cd /lib/modules/4.14.153/kernel/net/ipv4
-wget --no-check-certificate -qO "tcp_bbr.ko" "https://raw.githubusercontent.com/caippx/bash/master/vvr/v${ver}/tcp_bbr.ko"
+wget --no-check-certificate -qO "tcp_bbr.ko" "https://raw.githubusercontent.com/caippx/bash/master/vvr/v0/tcp_bbr.ko"
 echo 'Setting: limits.conf'
 [ -f /etc/security/limits.conf ] && LIMIT='262144' && sed -i '/^\(\*\|root\)[[:space:]]*\(hard\|soft\)[[:space:]]*\(nofile\|memlock\)/d' /etc/security/limits.conf && echo -ne "*\thard\tmemlock\t${LIMIT}\n*\tsoft\tmemlock\t${LIMIT}\nroot\thard\tmemlock\t${LIMIT}\nroot\tsoft\tmemlock\t${LIMIT}\n*\thard\tnofile\t${LIMIT}\n*\tsoft\tnofile\t${LIMIT}\nroot\thard\tnofile\t${LIMIT}\nroot\tsoft\tnofile\t${LIMIT}\n\n" >>/etc/security/limits.conf
 echo 'Setting: sysctl.conf'
