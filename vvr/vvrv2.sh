@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ ! -f "/lib/modules/$(uname -r)/kernel/net/ipv4/tcp_bbr.ko" ] && echo "Not Support BBR by Default." && exit 1
+[ ! -f "/lib/modules/$(uname -r)/kernel/net/ipv4/tcp_bbr.ko" ] && echo "Not Support BBR by Default." && echo "默认不支持BBR 请切换支持BBR的内核" && exit 1
 
 installDep=()
 for dep in $(echo "gcc,make" |sed 's/,/\n/g'); do command -v "${dep}" >/dev/null || installDep+=("${dep}"); done
@@ -11,18 +11,19 @@ if [ "${#installDep[@]}" -gt 0 ]; then
   apt install -y "${installDep[@]}"
   if [ $? -ne 0 ]; then
     echo "Install Package Fail."
+    echo "安装依赖失败."
     exit 1
   fi
 fi
 
 kernelVer=$(uname -r |cut -d- -f1 |cut -d. -f1-2)
-[ ! -n "${kernelVer}" ] && echo "No Found Kernel Version." && exit 1
+[ ! -n "${kernelVer}" ] && echo "No Found Kernel Version." && echo "无法识别内核版本." && exit 1
 
 wget -qO /tmp/tcp_bbr.c "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/net/ipv4/tcp_bbr.c?h=v${kernelVer}"
-[ $? -ne 0 ] && echo "Invalid Kernel Version." && exit 1
+[ $? -ne 0 ] && echo "Invalid Kernel Version." && echo "不支持的内核版本" && exit 1
 
-wget -qO /tmp/Makefile "https://github.com/MoeClub/BBR/raw/master/Makefile"
-[ $? -ne 0 ] && echo "Invalid Make File." && exit 1
+wget -qO /tmp/Makefile "https://raw.githubusercontent.com/caippx/bash/master/vvr/v2/Makefile"
+[ $? -ne 0 ] && echo "Invalid Make File." && echo "编译文件下载错误" && exit 1
 
 
 # bbr_min_rtt_win_sec
