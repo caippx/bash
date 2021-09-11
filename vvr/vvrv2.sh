@@ -50,7 +50,7 @@ sed -i 's|static const u32 bbr_lt_bw_ratio[^;]*;|static const u32 bbr_lt_bw_rati
 sed -i 's|static const u32 bbr_lt_bw_diff[^;]*;|static const u32 bbr_lt_bw_diff = 8000 / 8;|g' /tmp/tcp_bbr.c
 
 # mark
-sed -i '$s|");| VVR");|g' /tmp/tcp_bbr.c
+sed -i '$s|");| Vicer Violence RTT ");|g' /tmp/tcp_bbr.c
 
 cd /tmp
 make && make install
