@@ -8,5 +8,5 @@ bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/caipp
 
 bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/caippx/bash/master/vvr/vvrv2.sh')
 
-bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/caippx/bash/master/vvr/vvr2-cn.sh')
+bash <(wget --no-check-certificate -qO- 'https://ppxvpn.com/https://raw.githubusercontent.com/caippx/bash/master/vvr/vvr2-cn.sh')
 
