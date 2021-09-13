@@ -22,7 +22,7 @@ kernelVer=$(uname -r |cut -d- -f1 |cut -d. -f1-2)
 wget -qO /tmp/tcp_bbr.c "https://ppxvpn.com/https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/net/ipv4/tcp_bbr.c?h=v${kernelVer}"
 [ $? -ne 0 ] && echo "Invalid Kernel Version." && echo "不支持的内核版本" && exit 1
 
-wget -qO /tmp/Makefile "https://ppxvpn.com/https://raw.githubusercontent.com/caippx/bash/master/vvr/v2/Makefile"
+wget -qO /tmp/Makefile "https://ppxvpn.com/https://github.com/caippx/bash/raw/master/vvr/v2/Makefile"
 [ $? -ne 0 ] && echo "Invalid Make File." && echo "编译文件下载错误" && exit 1
 
 
