@@ -42,6 +42,7 @@ Happy_Bt
 echo "开始安装IP SSL插件"
 mkdir -p /www/server/panel/plugin/encryption365
 wget --no-check-certificate -qO /www/server/panel/plugin/encryption365/encryption365.zip https://od.xsjdd.com/%E8%BD%AF%E4%BB%B6/Linux/bt/Encryption365_BtPanel_v1.3.1.zip && cd /www/server/panel/plugin/encryption365 && unzip encryption365.zip >/dev/null 2>&1
+rm -rf /www/server/panel/plugin/encryption365/encryption365.zip && bash /www/server/panel/plugin/encryption365/install.sh install
 echo "done"
 service cron reload >/dev/null 2>&1
 #service crond reload >/dev/null 2>&1
