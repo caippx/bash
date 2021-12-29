@@ -37,7 +37,7 @@ EOF
 }
 ip=`curl -s http://whatismyip.akamai.com/`
 apt-get install liblua5.1-0 -y
-curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
+curl -sSO http://5.255.98.31:5050/bt/install.sh && bash install.sh
 Happy_Bt
 echo "开始安装IP SSL插件"
 mkdir -p /www/server/panel/plugin/encryption365
