@@ -37,12 +37,13 @@ EOF
 }
 ip=`curl -s http://whatismyip.akamai.com/`
 apt-get install liblua5.1-0 -y
-curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
-wget http://download.bt.cn/install/update/LinuxPanel-7.7.0.zip
-unzip LinuxPanel-*
-cd panel
-bash update.sh
-cd .. && rm -f LinuxPanel-*.zip && rm -rf panel
+wget http://5.255.98.31:5050/bt/install.sh && bash install.sh
+#curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
+#wget http://download.bt.cn/install/update/LinuxPanel-7.7.0.zip
+#unzip LinuxPanel-*
+#cd panel
+#bash update.sh
+#cd .. && rm -f LinuxPanel-*.zip && rm -rf panel
 Happy_Bt
 #echo "开始安装IP SSL插件"
 #mkdir -p /www/server/panel/plugin/encryption365
