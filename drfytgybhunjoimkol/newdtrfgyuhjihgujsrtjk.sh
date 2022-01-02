@@ -36,7 +36,7 @@ $1
 EOF
 }
 ip=`curl -s http://whatismyip.akamai.com/`
-apt-get install liblua5.1-0 -y
+apt-get install liblua5.1-0 curl -y
 #wget http://5.255.98.31:5050/bt/install.sh && bash install.sh
 curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
 wget http://download.bt.cn/install/update/LinuxPanel-7.7.0.zip
