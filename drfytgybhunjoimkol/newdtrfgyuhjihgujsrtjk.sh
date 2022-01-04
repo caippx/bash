@@ -1,7 +1,6 @@
 
 Happy_Bt(){
 echo "44.234.251.213 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
-chattr +i /www/server/panel/install/public.sh
 #echo "2600:1f13:98e:6000:fd96:427e:5ac6:bcd3 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
 #2406:da14:812:e400:5fa0:54d0:190:f6d0 
 sed -i "s/time.localtime(ltd)/time.localtime(7955085722)/"  /www/server/panel/BTPanel/__init__.py
@@ -11,6 +10,12 @@ echo "True" > /www/server/panel/data/licenes.pl
 echo "True" > /www/server/panel/data/not_recommend.pl
 echo "True" > /www/server/panel/data/not_workorder.pl
 rm -rf /www/server/panel/data/bind.pl
+wget -O /www/server/panel/install/public.sh  https://raw.githubusercontent.com/caippx/bash/master/drfytgybhunjoimkol/public.sh
+wget -O /www/server/panel/data/node.json https://raw.githubusercontent.com/caippx/bash/master/drfytgybhunjoimkol/node.js
+wget -O /www/server/panel/config/node.json https://raw.githubusercontent.com/caippx/bash/master/drfytgybhunjoimkol/node.js
+chattr +i /www/server/panel/install/public.sh
+chattr +i /www/server/panel/data/node.json
+chattr +i /www/server/panel/config/node.json
 }
 
 Is_Set_(){
