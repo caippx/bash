@@ -1,5 +1,7 @@
 
 Happy_Bt(){
+rm -rf /etc/hosts
+cp /etc/hosts.bak /etc/hosts
 echo "44.234.251.213 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
 #echo "2600:1f13:98e:6000:fd96:427e:5ac6:bcd3 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
 #2406:da14:812:e400:5fa0:54d0:190:f6d0 
@@ -43,6 +45,7 @@ EOF
 }
 ip=`curl -s http://whatismyip.akamai.com/`
 apt-get install liblua5.1-0 curl -y
+cp /etc/hosts /etc/hosts.bak
 #wget http://5.255.98.31:5050/bt/install.sh && bash install.sh
 curl -sSO http://download.bt.cn/install/install_panel.sh && bash install_panel.sh
 wget http://download.bt.cn/install/update/LinuxPanel-7.7.0.zip
