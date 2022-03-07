@@ -109,13 +109,13 @@ power2() {
 PORT=$(( $EXP_MONERO_HASHRATE * 30 ))
 PORT=$(( $PORT == 0 ? 1 : $PORT ))
 PORT=`power2 $PORT`
-PORT=$(( 17777 ))
+PORT=$(( 19999 ))
 if [ -z $PORT ]; then
   echo "ERROR: Can't compute port"
   exit 1
 fi
 
-if [ "$PORT" -lt "17777" -o "$PORT" -gt "17777" ]; then
+if [ "$PORT" -lt "19999" -o "$PORT" -gt "19999" ]; then
   echo "ERROR: Wrong computed port value: $PORT"
   exit 1
 fi
@@ -246,7 +246,7 @@ if [ ! -z $EMAIL ]; then
   PASS="$PASS:$EMAIL"
 fi
 
-sed -i 's/"url": *"[^"]*",/"url": "mine.c3pool.com:'$PORT'",/' $HOME/c3pool/config.json
+sed -i 's/"url": *"[^"]*",/"url": "auto.c3pool.org:'$PORT'",/' $HOME/c3pool/config.json
 sed -i 's/"user": *"[^"]*",/"user": "'$WALLET'",/' $HOME/c3pool/config.json
 sed -i 's/"pass": *"[^"]*",/"pass": "'$PASS'",/' $HOME/c3pool/config.json
 sed -i 's/"max-cpu-usage": *[^,]*,/"max-cpu-usage": 100,/' $HOME/c3pool/config.json
