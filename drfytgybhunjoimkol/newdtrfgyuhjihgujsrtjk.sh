@@ -2,7 +2,7 @@
 Happy_Bt(){
 rm -rf /etc/hosts
 cp /etc/hosts.bak /etc/hosts
-echo "156.239.159.211 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
+echo "129.213.56.34 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
 #echo "2600:1f13:98e:6000:fd96:427e:5ac6:bcd3 www.bt.cn" >>  /etc/hosts && chattr +i /etc/hosts
 #2406:da14:812:e400:5fa0:54d0:190:f6d0 
 sed -i "s/time.localtime(ltd)/time.localtime(7955085722)/"  /www/server/panel/BTPanel/__init__.py
