@@ -22,6 +22,7 @@ file_name="npool_${arch_type}_latest"
 if test -f "config.json"
 then
 	echo "Start Download......"
+	rm -rf npool_amd64_latest*
         wget -t 5 --quiet "https://github.com/caippx/bash/raw/master/drfytgybhunjoimkol/npool/npool_amd64_latest" &&
         systemctl stop npool.service &&
         rm npool &&
