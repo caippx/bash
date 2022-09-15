@@ -8,3 +8,15 @@ deb-src http://mirrors.aliyun.com/debian-security buster/updates main
 deb-src http://mirrors.aliyun.com/debian/ buster main non-free contrib
 deb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
 deb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
+
+
+官方
+deb http://deb.debian.org/debian/ buster main non-free contrib
+deb http://deb.debian.org/debian-security buster/updates main
+deb http://deb.debian.org/debian/ buster-updates main non-free contrib
+deb http://deb.debian.org/debian/ buster-backports main non-free contrib
+
+deb-src http://deb.debian.org/debian-security buster/updates main
+deb-src http://deb.debian.org/debian/ buster main non-free contrib
+deb-src http://deb.debian.org/debian/ buster-updates main non-free contrib
+deb-src http://deb.debian.org/debian/ buster-backports main non-free contrib
