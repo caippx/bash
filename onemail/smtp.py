@@ -71,7 +71,7 @@ class EmlParse():
         self.focus()
         # self.red.setex(self.eto,(self.subject,str(self.body),str(self.bodyhtml)),60) 
         for ieto in self.eto:   
-            self.red.setex(ieto,str(self.dict),120) 
+            self.red.setex(ieto,120,str(self.dict)) 
 
             if len(self.bodyhtml) > 0 :
                 code=self.bodyhtml
