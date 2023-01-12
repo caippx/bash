@@ -2,8 +2,8 @@
 
 function install_gost(){
 echo "自动安装只适应x64"
-wget https://github.com/ginuerzh/gost/releases/download/v2.11.1/gost-linux-amd64-2.11.1.gz && gunzip gost-linux-amd64-2.11.1.gz
-mv gost-linux-amd64-2.11.1 /usr/bin/gost && chmod +x /usr/bin/gost
+wget https://github.com/ginuerzh/gost/releases/download/v2.11.4/gost-linux-amd64-2.11.4.gz && gunzip gost-linux-amd64-2.11.4.gz
+mv gost-linux-amd64-2.11.4 /usr/bin/gost && chmod +x /usr/bin/gost
 }
 
 function list(){
