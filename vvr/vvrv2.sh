@@ -90,5 +90,5 @@ net.ipv4.tcp_sack = 1
 net.ipv4.tcp_dsack = 1
 net.ipv4.tcp_ecn = 0
 net.ipv4.tcp_ecn_fallback = 1
-" >> sysctl.conf
+" >> /etc/sysctl.conf
 sysctl -p
