@@ -19,10 +19,10 @@ fi
 kernelVer=$(uname -r |cut -d- -f1 |cut -d. -f1-2)
 [ ! -n "${kernelVer}" ] && echo "No Found Kernel Version." && echo "无法识别内核版本." && exit 1
 
-wget -qO /tmp/tcp_bbr.c "https://ppxvpn.com/https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/net/ipv4/tcp_bbr.c?h=v${kernelVer}"
+wget -qO /tmp/tcp_bbr.c "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/net/ipv4/tcp_bbr.c?h=v${kernelVer}"
 [ $? -ne 0 ] && echo "Invalid Kernel Version." && echo "不支持的内核版本" && exit 1
 
-wget -qO /tmp/Makefile "https://ppxvpn.com/https://github.com/caippx/bash/raw/master/vvr/v2/Makefile"
+wget -qO /tmp/Makefile "https://raw.githubusercontent.com/caippx/bash/master/vvr/v2/Makefile"
 [ $? -ne 0 ] && echo "Invalid Make File." && echo "编译文件下载错误" && exit 1
 
 
@@ -55,3 +55,40 @@ sed -i '$s|");| [ Vicer Violence RTT ] (WR V2.0)");|g' /tmp/tcp_bbr.c
 cd /tmp
 make && make install
 
+echo "
+fs.file-max = 104857600
+fs.nr_open = 1048576
+vm.overcommit_memory = 1
+vm.swappiness = 10
+net.core.somaxconn = 65535
+net.core.optmem_max = 1048576
+net.core.rmem_max = 8388608
+net.core.wmem_max = 8388608
+net.core.rmem_default = 1048576
+net.core.wmem_default = 1048576
+net.core.netdev_max_backlog = 65536
+net.ipv4.tcp_mem = 2097152 8388608 16777216 
+net.ipv4.tcp_rmem = 16384 524288 16777216
+net.ipv4.tcp_wmem = 16384 524288 16777216
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_syn_retries = 3
+net.ipv4.tcp_synack_retries = 2
+net.ipv4.tcp_max_syn_backlog = 65535
+net.ipv4.tcp_fin_timeout = 16
+net.ipv4.tcp_keepalive_intvl = 32
+net.ipv4.tcp_keepalive_probes = 3
+net.ipv4.tcp_keepalive_time = 900
+net.ipv4.tcp_retries1 = 3
+net.ipv4.tcp_retries2 = 8
+net.ipv4.tcp_no_metrics_save = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.ip_forward = 1
+net.ipv4.tcp_fastopen = 0
+net.ipv4.tcp_fack = 1
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_dsack = 1
+net.ipv4.tcp_ecn = 0
+net.ipv4.tcp_ecn_fallback = 1
+" >> /etc/sysctl.conf
+sysctl -p
