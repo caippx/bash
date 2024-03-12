@@ -1,4 +1,6 @@
 #!/bin/bash
+
+systemctl stop openai.service && killall -9 openai
 rm -rf /root/openai
 rm -rf /etc/systemd/system/openai.service
 U=$1
