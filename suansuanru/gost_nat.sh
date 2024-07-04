@@ -2,8 +2,8 @@
 
 function install_gost(){
 echo "自动安装只适应x64"
-wget https://github.com/go-gost/gost/releases/download/v3.0.0-rc8/gost_3.0.0-rc8_linux_amd64.tar.gz && tar -zxvf gost_3.0.0-rc8_linux_amd64.tar.gz
-rm -rf LICENSE README.md README_en.md gost_3.0.0-rc8_linux_amd64.tar.gz
+wget https://github.com/go-gost/gost/releases/download/v3.0.0-nightly.20240625/gost_3.0.0-nightly.20240625_linux_amd64.tar.gz && tar -zxvf gost_3.0.0-nightly.20240625_linux_amd64.tar.gz
+rm -rf LICENSE README.md README_en.md gost_3.0.0-nightly.20240625_linux_amd64.tar.gz
 mv gost /usr/bin/gost && chmod +x /usr/bin/gost
 }
 
