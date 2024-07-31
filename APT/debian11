@@ -26,12 +26,16 @@ EOF
 
 
 官方
-deb http://deb.debian.org/debian/ bullseye main non-free contrib
-deb http://deb.debian.org/debian-security bullseye/updates main
-deb http://deb.debian.org/debian/ bullseye-updates main non-free contrib
-deb http://deb.debian.org/debian/ bullseye-backports main non-free contrib
+cat > /etc/apt/sources.list << EOF
+deb https://deb.debian.org/debian/ bullseye main contrib non-free
+deb-src https://deb.debian.org/debian/ bullseye main contrib non-free
 
-deb-src http://deb.debian.org/debian-security bullseye/updates main
-deb-src http://deb.debian.org/debian/ bullseye main non-free contrib
-deb-src http://deb.debian.org/debian/ bullseye-updates main non-free contrib
-deb-src http://deb.debian.org/debian/ bullseye-backports main non-free contrib
+deb https://deb.debian.org/debian/ bullseye-updates main contrib non-free
+deb-src https://deb.debian.org/debian/ bullseye-updates main contrib non-free
+
+deb https://deb.debian.org/debian/ bullseye-backports main contrib non-free
+deb-src https://deb.debian.org/debian/ bullseye-backports main contrib non-free
+
+deb https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
+deb-src https://deb.debian.org/debian-security/ bullseye-security main contrib non-free
+EOF
