@@ -1,4 +1,5 @@
 DeBian 11国内源 无V6
+cat > /etc/apt/sources.list << EOF
 deb http://mirrors.aliyun.com/debian/ bullseye main non-free contrib
 deb http://mirrors.aliyun.com/debian-security bullseye/updates main
 deb http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib
@@ -8,6 +9,7 @@ deb-src http://mirrors.aliyun.com/debian-security bullseye/updates main
 deb-src http://mirrors.aliyun.com/debian/ bullseye main non-free contrib
 deb-src http://mirrors.aliyun.com/debian/ bullseye-updates main non-free contrib
 deb-src http://mirrors.aliyun.com/debian/ bullseye-backports main non-free contrib
+EOF
 
 清华源
 cat > /etc/apt/sources.list << EOF
