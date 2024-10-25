@@ -2,7 +2,6 @@
 
 
 [ ! -f "/lib/modules/$(uname -r)/kernel/net/ipv4/tcp_bbr.ko.gz" ] && echo "Not Support BBR by Default." && echo "默认不支持BBR 请切换支持BBR的内核" && exit 1
-apk update
 installDep=()
 for dep in $(echo "gcc,make,linux-headers,linux-virt-dev" |sed 's/,/\n/g'); do command -v "${dep}" >/dev/null || installDep+=("${dep}"); done
 
