@@ -7,7 +7,7 @@ clean:
 	make -C /lib/modules/`uname -r`/build M=`pwd` clean
 
 install:
-  gzip tcp_bbr.ko
+	gzip tcp_bbr.ko
 	cp -rf tcp_bbr.ko.gz /lib/modules/`uname -r`/kernel/net/ipv4
 	insmod /lib/modules/`uname -r`/kernel/net/ipv4/tcp_bbr.ko.gz 2>/dev/null || true
 	depmod -a
