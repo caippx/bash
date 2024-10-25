@@ -71,8 +71,9 @@ config_webBasePath=${config_webBasePath:-ppxwo}
 /usr/local/x-ui/x-ui setting -username "${config_username}" -password "${config_password}" -port "${portTemp}" -webBasePath "${config_webBasePath}"
 /usr/local/x-ui/x-ui migrate
 
-echo '#!/sbin/openrc-run
- 
+echo '
+#!/sbin/openrc-run
+
 name="3x-ui"
 command="/usr/local/x-ui/x-ui"
 command_background="yes"
@@ -83,4 +84,3 @@ depend() {
 
 rc-service 3x-ui start
 rc-update add 3x-ui
-
