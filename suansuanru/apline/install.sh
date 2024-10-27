@@ -86,7 +86,7 @@ name="3x-ui"
 directory="/usr/local/x-ui"
 command="/usr/local/x-ui/x-ui"
 command_background="yes"
- 
+pidfile="/var/run/3x-uin.pid"
 depend() {
     need net
 }' > /etc/init.d/3x-ui
