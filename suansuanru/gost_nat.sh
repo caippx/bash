@@ -33,14 +33,14 @@ function run_wss_zz(){
 echo && stty erase '^H' && read -p "输入落地域名: " proxy_ip
 echo && stty erase '^H' && read -p "输入落地端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+tls://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
+nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport $local_port -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport $local_port -j ACCEPT
 sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+tls://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
+echo "nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
 }
 
 function run_wss_luodi(){
