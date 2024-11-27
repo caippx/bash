@@ -52,6 +52,7 @@ if [ -d "/gost_cert" ]; then
 else
   echo '证书不存在'
   exit
+fi
 iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport $local_port -j ACCEPT
 iptables -I INPUT -p udp -m state --state NEW -m udp --dport $local_port -j ACCEPT
 sleep 3
