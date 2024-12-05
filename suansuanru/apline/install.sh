@@ -65,7 +65,7 @@ chmod +x x-ui/x-ui x-ui/bin/xray-linux-* x-ui/x-ui.sh
 rm -fr /etc/init.d/3x-ui
 mv x-ui/ /usr/local/
 rm -rf /usr/local/x-ui/x-ui
-wget https://github.com/caippx/bash/releases/download/2.4.5/x-ui.zip
+wget https://github.com/caippx/bash/releases/download/2.4.8/x-ui.zip
 unzip x-ui.zip && rm -rf x-ui.zip && mv x-ui /usr/local/x-ui/x-ui &&chmod +x /usr/local/x-ui/x-ui
 
 
