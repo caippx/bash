@@ -4,6 +4,16 @@ address=$1
 worker_name=$2
 threads=$(nproc)
 apt install libsodium23 libsodium-dev bc cron -y
+if ! command -v tcping & > /dev/null
+then
+    echo "tcping 不存在，正在安装..."
+    wget https://github.com/cloverstd/tcping/releases/download/v0.1.1/tcping-linux-amd64-v0.1.1.tar.gz && tar -zxvf tcping-linux-amd64-v0.1.1.tar.gz 
+    mv tcping  /usr/bin/tcping && chmod +x  /usr/bin/tcping 
+    rm -rf tcping-linux-amd64-v0.1.1.tar.gz 
+    echo "tcping 安装完成"
+else
+    echo "tcping 已经安装"
+fi
 #grep -o 'avx2' /proc/cpuinfo
 urls=("cn.vipor.net" "sg.vipor.net" "ussw.vipor.net" "usw.vipor.net" "pl.vipor.net" "usse.vipor.net" "fr.vipor.net" "de.vipor.net" "fi.vipor.net" "sa.vipor.net") #vipor
 #urls=("na.luckpool.net" "eu.luckpool.net" "ap.luckpool.net") #luck
@@ -14,7 +24,7 @@ best_url=""
 # 循环测试每个URL
 for url in "${urls[@]}"; do
   # 使用ping命令测试延迟，提取平均延迟值
-  latency=$(ping -c 2 "$url" | tail -1 | awk -F '/' '{print $5}')
+  latency=$(tcping -c 2 "$url" | tail -1 | awk -F '/' '{print $5}')
   
   # 检查是否是最低延迟
   if (( $(echo "$latency < $min_latency" | bc -l) )); then
