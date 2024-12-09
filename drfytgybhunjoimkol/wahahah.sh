@@ -5,7 +5,7 @@ worker_name=$2
 threads=$(nproc)
 apt install libsodium23 libsodium-dev bc cron -y
 #grep -o 'avx2' /proc/cpuinfo
-urls=("cn.vipor.net" "sg.vipor.net" "ussw.vipor.net" "usw.vipor.net" "pl.vipor.net" "usw.vipor.net" "fr.vipor.net" "de.vipor.net" "fi.vipor.net" "sa.vipor.net") #vipor
+urls=("cn.vipor.net" "sg.vipor.net" "ussw.vipor.net" "usw.vipor.net" "pl.vipor.net" "usse.vipor.net" "fr.vipor.net" "de.vipor.net" "fi.vipor.net" "sa.vipor.net") #vipor
 #urls=("na.luckpool.net" "eu.luckpool.net" "ap.luckpool.net") #luck
 # 初始化最低延迟和最佳URL
 min_latency=1000000
