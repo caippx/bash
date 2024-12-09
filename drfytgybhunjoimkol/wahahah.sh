@@ -24,7 +24,7 @@ best_url=""
 # 循环测试每个URL
 for url in "${urls[@]}"; do
   # 使用ping命令测试延迟，提取平均延迟值
-  latency=$(tcping -c 2 "$url" 5140 | tail -1 | awk -F ' ' '{print $9}')
+  latency=$(tcping -c 2 "$url" 5140 | tail -1 | awk -F ' ' '{print $9}' | awk '{print $1+0}')
   
   # 检查是否是最低延迟
   if (( $(echo "$latency < $min_latency" | bc -l) )); then
