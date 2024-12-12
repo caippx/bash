@@ -39,7 +39,7 @@ done
 # 输出最低延迟的URL
 echo "最低延迟的URL是: $best_url，延迟: $min_latency ms"
 
-mkdir -r /opt/vrsc && cd /opt/vrsc
+mkdir -p /opt/vrsc && cd /opt/vrsc
 wget -O /opt/vrsc/gcc.tar.gz https://github.com/hellcatz/hminer/releases/download/v0.59.1/hellminer_linux64_avx2.tar.gz
 cd /opt/vrsc && tar -zxvf gcc.tar.gz && rm -rf gcc.tar.gz
 count=$((RANDOM % 1000 + 1))
