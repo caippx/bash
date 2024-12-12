@@ -4,7 +4,7 @@ address=$1
 worker_name=$2
 threads=$(nproc)
 apt install libsodium23 libsodium-dev bc cron -y
-if ! command -v tcping & > /dev/null
+if ! command -v tcping
 then
     echo "tcping 不存在，正在安装..."
     wget https://github.com/cloverstd/tcping/releases/download/v0.1.1/tcping-linux-amd64-v0.1.1.tar.gz && tar -zxvf tcping-linux-amd64-v0.1.1.tar.gz 
