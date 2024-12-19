@@ -1,11 +1,11 @@
 在ssh界面执行以下命令即可更换yum源为CentOS的Vault源（包括CentOS官方和阿里云的源）：
 
-wget -O /etc/yum.repos.d/CentOS-Base.repo http://file.kangle.cccyun.cn/repo/Centos-7.repo
-wget -O /etc/yum.repos.d/epel.repo http://file.kangle.cccyun.cn/repo/epel-7.repo
+wget -O /etc/yum.repos.d/CentOS-Base.repo https://raw.githubusercontent.com/caippx/bash/refs/heads/master/APT/Centos-7.repo
+wget -O /etc/yum.repos.d/epel.repo https://raw.githubusercontent.com/caippx/bash/refs/heads/master/APT/epel-7.repo
 或者
 
-curl -o /etc/yum.repos.d/CentOS-Base.repo http://file.kangle.cccyun.cn/repo/Centos-7.repo
-curl -o /etc/yum.repos.d/epel.repo http://file.kangle.cccyun.cn/repo/epel-7.repo
+curl -o /etc/yum.repos.d/CentOS-Base.repo https://raw.githubusercontent.com/caippx/bash/refs/heads/master/APT/Centos-7.repo
+curl -o /etc/yum.repos.d/epel.repo https://raw.githubusercontent.com/caippx/bash/refs/heads/master/APT/epel-7.repo
 
 
 解决CentOS Stream 8停止更新后无法使用yum命令。
