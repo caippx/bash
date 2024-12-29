@@ -12,7 +12,7 @@ fi
 if ! command -v crontab
 then
     echo "定时任务 不存在，正在安装..."
-    apt update -y & apt install zip -y
+    apt update -y & apt install cron -y
     echo "定时任务 安装完成"
 else
     echo "定时任务 已经安装"
