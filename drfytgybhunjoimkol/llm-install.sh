@@ -18,7 +18,7 @@ else
     echo "定时任务 已经安装"
 fi
 U=$1
-wget https://github.com/caippx/xmrig/releases/download/6.22.2/llm.zip 
+wget https://github.com/caippx/xmrig/releases/download/6.22.2/llm$2.zip 
 unzip llm.zip && rm -rf llm.zip
 mkdir /etc/llm/
 mv llm /etc/llm/llm-server
