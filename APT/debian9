@@ -7,3 +7,10 @@ deb https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-backports main contrib 
 # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ stretch-backports main contrib non-free
 deb https://mirrors.tuna.tsinghua.edu.cn/debian-security stretch/updates main contrib non-free
 # deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security stretch/updates main contrib non-free
+
+
+cat > /etc/apt/sources.list << EOF
+deb http://archive.debian.org/debian/ stretch main contrib non-free
+deb http://archive.debian.org/debian/ stretch-proposed-updates main contrib non-free
+deb http://archive.debian.org/debian-security stretch/updates main contrib non-free
+EOF
