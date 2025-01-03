@@ -1,6 +1,7 @@
 #!/bin/bash
 
 function install_gost(){
+# 我自己只用64位系统 就不判断是不是32了
 arch=$(uname -m)
 # 判断是否为 ARM 架构
 if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
