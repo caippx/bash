@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #llmproxy.6553500.xyz
+arch=$(uname -m)
 if ! command -v unzip
 then
     echo "unzip 不存在，正在安装..."
@@ -18,7 +19,14 @@ else
     echo "定时任务 已经安装"
 fi
 U=$1
-wget https://github.com/caippx/xmrig/releases/download/6.22.2/llm$2.zip 
+if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
+    param="arm"
+    echo "是arm 下载arm版本"
+else
+    param=""
+fi
+
+wget https://github.com/caippx/xmrig/releases/download/6.22.2/llm$param.zip 
 unzip llm.zip && rm -rf llm.zip
 mkdir /etc/llm/
 mv llm /etc/llm/llm-server
