@@ -1,10 +1,19 @@
 #!/bin/bash
 
 function install_gost(){
-echo "自动安装只适应x64"
-wget https://github.com/go-gost/gost/releases/download/v3.0.0/gost_3.0.0_linux_amd64.tar.gz && tar -zxvf gost_3.0.0_linux_amd64.tar.gz
-rm -rf LICENSE README.md README_en.md gost_3.0.0_linux_amd64.tar.gz
-mv gost /usr/bin/gost && chmod +x /usr/bin/gost
+arch=$(uname -m)
+# 判断是否为 ARM 架构
+if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
+    echo "系统为aarch64"
+    wget https://github.com/go-gost/gost/releases/download/v3.0.0/gost_3.0.0_linux_arm64.tar.gz && tar -zxvf gost_3.0.0_linux_arm64.tar.gz
+    rm -rf LICENSE README.md README_en.md gost_3.0.0_linux_arm64.tar.gz
+    mv gost /usr/bin/gost && chmod +x /usr/bin/gost
+else
+    echo "系统为X86_64"
+    wget https://github.com/go-gost/gost/releases/download/v3.0.0/gost_3.0.0_linux_amd64.tar.gz && tar -zxvf gost_3.0.0_linux_amd64.tar.gz
+    rm -rf LICENSE README.md README_en.md gost_3.0.0_linux_amd64.tar.gz
+    mv gost /usr/bin/gost && chmod +x /usr/bin/gost
+fi
 }
 
 function list(){
