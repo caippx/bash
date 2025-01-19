@@ -25,13 +25,16 @@ deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security/ bookworm-security 
 EOF
 
 
-官方
-deb http://deb.debian.org/debian/ bookworm main non-free-firmware contrib
-deb http://deb.debian.org/debian-security bookworm/updates main
-deb http://deb.debian.org/debian/ bookworm-updates main non-free-firmware contrib
-deb http://deb.debian.org/debian/ bookworm-backports main non-free-firmware contrib
+cat > /etc/apt/sources.list << EOF
+deb https://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+deb-src https://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 
-deb-src http://deb.debian.org/debian-security bookworm/updates main
-deb-src http://deb.debian.org/debian/ bookworm main non-free-firmware contrib
-deb-src http://deb.debian.org/debian/ bookworm-updates main non-free-firmware contrib
-deb-src http://deb.debian.org/debian/ bookworm-backports main non-free-firmware contrib
+deb https://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
+deb-src https://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
+
+deb https://deb.debian.org/debian/ bookworm-backports main contrib non-free non-free-firmware
+deb-src https://deb.debian.org/debian/ bookworm-backports main contrib non-free non-free-firmware
+
+deb https://deb.debian.org/debian-security/ bookworm-security main contrib non-free non-free-firmware
+deb-src https://deb.debian.org/debian-security/ bookworm-security main contrib non-free non-free-firmware
+EOF
