@@ -107,16 +107,13 @@ install_agent() {
       [yY][eE][sS] | [yY])
           echo "使用加速镜像"
           CN=true
+          NZ_AGENT_URL="https://ghproxy.11451185.xyz/${GITHUB_URL}/nezhahq/agent/releases/download/${_version}/nezha-agent_linux_${os_arch}.zip"
           ;;
       [nN][oO] | [nN])
            echo "不加速中国镜像"
+           NZ_AGENT_URL="https://${GITHUB_URL}/nezhahq/agent/releases/download/${_version}/nezha-agent_linux_${os_arch}.zip"
            ;;
        esac
-    if [ -z "$CN" ]; then
-        NZ_AGENT_URL="https://ghproxy.11451185.xyz/${GITHUB_URL}/nezhahq/agent/releases/download/${_version}/nezha-agent_linux_${os_arch}.zip"
-    else
-        NZ_AGENT_URL="https://${GITHUB_URL}/nezhahq/agent/releases/download/${_version}/nezha-agent_linux_${os_arch}.zip"
-    fi
 
     _cmd="wget -t 2 -T 60 -O nezha-agent_linux_${os_arch}.zip $NZ_AGENT_URL >/dev/null 2>&1"
     if ! eval "$_cmd"; then
