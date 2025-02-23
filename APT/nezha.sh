@@ -248,3 +248,33 @@ show_menu() {
             ;;
     esac
 }
+
+
+if [ $# -gt 0 ]; then
+    case $1 in
+        "install_agent")
+            shift
+            if [ $# -ge 3 ]; then
+                install_agent "$@"
+            else
+                install_agent 0
+            fi
+            ;;
+        "modify_agent_config")
+            modify_agent_config 0
+            ;;
+        "show_agent_log")
+            show_agent_log 0
+            ;;
+        "uninstall_agent")
+            uninstall_agent 0
+            ;;
+        "restart_agent")
+            restart_agent 0
+            ;;
+        *) show_usage ;;
+    esac
+else
+    select_version
+    show_menu
+fi
