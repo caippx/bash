@@ -70,10 +70,28 @@ selinux() {
     fi
 }
 
+pre() {
+    umask 077
+    ## os_arch
+    if uname -m | grep -q 'x86_64'; then
+        os_arch="amd64"
+    elif uname -m | grep -q 'i386\|i686'; then
+        os_arch="386"
+    elif uname -m | grep -q 'aarch64\|armv8b\|armv8l'; then
+        os_arch="arm64"
+    elif uname -m | grep -q 'arm'; then
+        os_arch="arm"
+    elif uname -m | grep -q 's390x'; then
+        os_arch="s390x"
+    elif uname -m | grep -q 'riscv64'; then
+        os_arch="riscv64"
+    fi
+}
 
 install_agent() {
     install_base
     selinux
+    pre
 
     echo "> 安装监控Agent"
 
