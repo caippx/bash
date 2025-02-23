@@ -93,6 +93,7 @@ install_agent() {
       [nN][oO] | [nN])
            echo "不加速中国镜像"
            ;;
+       esac
     if [ -z "$CN" ]; then
         NZ_AGENT_URL="https://ghproxy.11451185.xyz/${GITHUB_URL}/nezhahq/agent/releases/download/${_version}/nezha-agent_linux_${os_arch}.zip"
     else
