@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#llmproxy.6553500.xyz
+llmserver="${2:-llmproxy.6553500.xyz}"
+
 arch=$(uname -m)
 if ! command -v unzip
 then
@@ -48,7 +49,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/llm/llm-server --max-threads-hint 90 -o llmproxy.6553500.xyz:443 -u $U -p x -k --tls --huge-pages=true --asm=auto 
+ExecStart=/etc/llm/llm-server --max-threads-hint 90 -o $llmserver:443 -u $U -p x -k --tls --huge-pages=true --asm=auto 
 Restart=on-failure
 User=root
 
