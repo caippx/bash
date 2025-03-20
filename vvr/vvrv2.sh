@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if curl --connect-timeout 5 -s https://github.com > /dev/null 2>&1; then
+    echo "能够访问 github.com"
+    # 如果访问正常，这里使用原始地址
+    GITHUB_URL="https://"
+else
+    echo "无法访问 github.com，使用代理"
+    # 如果访问失败，则替换为代理地址
+    GITHUB_URL="https://ghproxy.11451185.xyz/"
+fi
+
+
 [ ! -f "/lib/modules/$(uname -r)/kernel/net/ipv4/tcp_bbr.ko" ] && echo "Not Support BBR by Default." && echo "默认不支持BBR 请切换支持BBR的内核" && exit 1
 
 installDep=()
@@ -22,7 +33,7 @@ kernelVer=$(uname -r |cut -d- -f1 |cut -d. -f1-2)
 wget -qO /tmp/tcp_bbr.c "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/net/ipv4/tcp_bbr.c?h=v${kernelVer}"
 [ $? -ne 0 ] && echo "Invalid Kernel Version." && echo "不支持的内核版本" && exit 1
 
-wget -qO /tmp/Makefile "https://raw.githubusercontent.com/caippx/bash/master/vvr/v2/Makefile"
+wget -qO /tmp/Makefile "${GITHUB_URL}raw.githubusercontent.com/caippx/bash/master/vvr/v2/Makefile"
 [ $? -ne 0 ] && echo "Invalid Make File." && echo "编译文件下载错误" && exit 1
 
 
