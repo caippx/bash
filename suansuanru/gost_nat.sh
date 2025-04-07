@@ -147,3 +147,7 @@ fi
 
 [[ $1 ==  "list" ]] && list
 [[ $1 ==  "" ]] && gogogo
+
+
+#gost -L ss://chacha20-ietf-poly1305:password@:60000
+#gost -L tcp://:33010/xxx:3010 -F ss://chacha20-ietf-poly1305:password@192.168.0.4:60000
