@@ -1,20 +1,12 @@
 #!/bin/bash
 
-if curl --connect-timeout 5 -s https://github.com > /dev/null 2>&1; then
-    echo "能够访问 github.com"
-    # 如果访问正常，这里使用原始地址
-    GITHUB_URL="https://"
-else
-    echo "无法访问 github.com，使用代理"
-    # 如果访问失败，则替换为代理地址
-    GITHUB_URL="https://ghproxy.11451185.xyz/"
-fi
+
 
 
 [ ! -f "/lib/modules/$(uname -r)/kernel/net/ipv4/tcp_bbr.ko" ] && echo "Not Support BBR by Default." && echo "默认不支持BBR 请切换支持BBR的内核" && exit 1
 
 installDep=()
-for dep in $(echo "gcc,make" |sed 's/,/\n/g'); do command -v "${dep}" >/dev/null || installDep+=("${dep}"); done
+for dep in $(echo "gcc,make,curl" |sed 's/,/\n/g'); do command -v "${dep}" >/dev/null || installDep+=("${dep}"); done
 ls -1 "/usr/src" |grep -q "^linux-headers-$(uname -r)" || installDep+=("linux-headers-$(uname -r)")
 
 if [ "${#installDep[@]}" -gt 0 ]; then
@@ -25,6 +17,16 @@ if [ "${#installDep[@]}" -gt 0 ]; then
     echo "安装依赖失败."
     exit 1
   fi
+fi
+
+if curl --connect-timeout 5 -s https://github.com > /dev/null 2>&1; then
+    echo "能够访问 github.com"
+    # 如果访问正常，这里使用原始地址
+    GITHUB_URL="https://"
+else
+    echo "无法访问 github.com，使用代理"
+    # 如果访问失败，则替换为代理地址
+    GITHUB_URL="https://ghproxy.11451185.xyz/"
 fi
 
 kernelVer=$(uname -r |cut -d- -f1 |cut -d. -f1-2)
