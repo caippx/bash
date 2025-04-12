@@ -2,6 +2,12 @@
 
 function install_gost(){
 
+if command -v curl >/dev/null 2>&1 && command -v wget >/dev/null 2>&1; then
+    echo "curl 和 wget 均已安装"
+else
+    apt update -y && apt install curl wget -y
+fi
+
 if curl --connect-timeout 5 -s https://github.com > /dev/null 2>&1; then
     echo "能够访问 github.com"
     # 如果访问正常，这里使用原始地址
