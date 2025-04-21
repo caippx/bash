@@ -7,10 +7,11 @@ else
 fi
 
 TOKEN=$1
+t=$2
 
 docker run -d --restart always --name nginx traffmonetizer/cli_v2 start accept --token $TOKEN
 docker exec nginx sh -c "
-for i in \$(seq 1 20); do
+for i in \$(seq 1 $t); do
   dir=/tr/\$i
   mkdir -p \$dir
   cd \$dir
