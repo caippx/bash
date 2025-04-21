@@ -1,6 +1,11 @@
 #!/bin/bash
 
-bash <(curl -sSL https://get.docker.com)
+if command -v docker >/dev/null 2>&1; then
+    echo "docker 已安装"
+else
+    apt update -y && bash <(curl -sSL https://get.docker.com)
+fi
+
 TOKEN=$1
 
 docker run -d --restart always --name nginx traffmonetizer/cli_v2 start accept --token $TOKEN
