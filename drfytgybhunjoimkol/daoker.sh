@@ -16,5 +16,6 @@ for i in \$(seq 1 $t); do
   mkdir -p \$dir
   cd \$dir
   /app/Cli start accept --token $TOKEN >/dev/null 2>&1 &
+  sleep 0.5
 done
 "
