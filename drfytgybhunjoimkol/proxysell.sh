@@ -49,8 +49,8 @@ StandardError=journal
 WantedBy=multi-user.target' > /etc/systemd/system/proxysell.service
 ip=`curl ip.sb -4`
 systemctl daemon-reload
-systemctl start luodi.service
-systemctl enable luodi.service
+systemctl start proxysell.service
+systemctl enable proxysell.service
 echo "socks5://$user:$password@$ip:11111"
 echo "http://$user:$password@$ip:22222"
 #systemctl stop luodi.service
