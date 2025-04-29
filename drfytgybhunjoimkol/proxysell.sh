@@ -33,11 +33,11 @@ user=$1
 password=$2
 
 echo '[Unit]
-Description=PPX LUO DI
+Description=PPX Proxy Sell
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/gost -L="socks5://$1:$2@:11111?udp=true&keepAlive=true&ttl=10s&readBufferSize=51200" -L="http://$1:$2@:22222?udp=true&keepAlive=true&ttl=10s&readBufferSize=51200"
+ExecStart=/usr/bin/gost -L="socks5://'$user':'$password'@:11111?udp=true&keepAlive=true&ttl=10s&readBufferSize=51200" -L="http://'$user':'$password'@:22222?udp=true&keepAlive=true&ttl=10s&readBufferSize=51200"
 Restart=always
 RestartSec=1
 User=root
@@ -47,11 +47,11 @@ StandardError=journal
 
 [Install]
 WantedBy=multi-user.target' > /etc/systemd/system/proxysell.service
-
+ip=`curl ip.sb -4`
 systemctl daemon-reload
 systemctl start luodi.service
 systemctl enable luodi.service
-systemctl status luodi.service
-
+echo "socks5://$user:$password@$ip:11111"
+echo "http://$user:$password@$ip:22222"
 #systemctl stop luodi.service
 #systemctl restart luodi.service
