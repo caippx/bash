@@ -75,7 +75,7 @@ sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" >> /dev/null 2>&1 &" >> /root/gost.cmd
+echo "nohup gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" >> /dev/null 2>&1 &" >> /root/gost.cmd
 }
 
 function run_wss_zz(){
