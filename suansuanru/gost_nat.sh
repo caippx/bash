@@ -70,12 +70,7 @@ function run_ws_luodi(){
 echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
 echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
-if [ -d "/gost_cert" ]; then
-  nohup gost -L "relay+ws://:$local_port/$proxy_ip:$proxy_port" >> /dev/null 2>&1 &
-else
-  echo '证书不存在'
-  exit
-fi
+nohup gost -L "relay+ws://:$local_port/$proxy_ip:$proxy_port" >> /dev/null 2>&1 &
 sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
