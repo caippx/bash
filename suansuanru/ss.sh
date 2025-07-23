@@ -187,6 +187,7 @@ prompt_for_port_method_password_dns() {
     done
 
     # 加密方式
+    echo 
     echo "选择加密方式:"
     echo "1) chacha20-poly1305"
     echo "2) aes-128-gcm"
@@ -235,7 +236,10 @@ prompt_for_port_method_password_dns() {
         dns_value=""
     fi
 
-    echo "$port|$method|$pwd|$dns_value"
+    export PROMPT_PORT="$port"
+    export PROMPT_METHOD="$method"
+    export PROMPT_PWD="$pwd"
+    export PROMPT_DNS="$dns_value"
 }
 
 do_install() {
@@ -326,10 +330,21 @@ do_install() {
 
     else
         # 单端口快速配置
-        port=0; method=""; pwd=""; dns_value=""
-        read -r port method pwd dns_value <<< "$(prompt_for_port_method_password_dns)"
+        echo
+        #port=0; method=""; pwd=""; dns_value=""
+        #mapfile -t arr < <(prompt_for_port_method_password_dns)
+        #port="${arr[0]}"
+        #method="${arr[1]}"
+        #pwd="${arr[2]}"
+        #dns_value="${arr[3]}"
+        prompt_for_port_method_password_dns
+        port="$PROMPT_PORT"
+        method="$PROMPT_METHOD"
+        pwd="$PROMPT_PWD"
+        dns_value="$PROMPT_DNS"
 
-        download_and_install_binary
+
+        # download_and_install_binary
         create_service_and_config "$port" "$method" "$pwd" "$dns_value"
 
         echo
