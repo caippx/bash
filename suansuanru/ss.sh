@@ -71,26 +71,73 @@ validate_password() {
     return 0
 }
 
+check_required_tools() {
+    local missing_tools=()
+    
+    for tool in curl tar xz; do
+        if ! command -v "$tool" >/dev/null 2>&1; then
+            missing_tools+=("$tool")
+        fi
+    done
+    
+    if [ ${#missing_tools[@]} -gt 0 ]; then
+        echo "缺少必要工具: ${missing_tools[*]}"
+        return 1
+    fi
+    return 0
+}
+
 install_dependencies() {
+    echo "检查必要工具..."
+    if check_required_tools; then
+        echo "所有必要工具已安装"
+        return 0
+    fi
+    
     echo "更新软件包索引，安装依赖..."
     case "$SYSTEM_TYPE" in
         alpine)
-            apk update
-            apk add --no-cache curl tar xz
+            if ! apk update; then
+                echo "更新软件包索引失败"
+                exit 1
+            fi
+            if ! apk add --no-cache curl tar xz; then
+                echo "安装依赖失败"
+                exit 1
+            fi
             ;;
         debian)
-            apt update
-            apt install -y curl tar xz-utils
+            if ! apt update; then
+                echo "更新软件包索引失败"
+                exit 1
+            fi
+            if ! apt install -y curl tar xz-utils; then
+                echo "安装依赖失败"
+                exit 1
+            fi
             ;;
         redhat)
-            yum update -y
-            yum install -y curl tar xz
+            if ! yum update -y; then
+                echo "更新软件包索引失败"
+                exit 1
+            fi
+            if ! yum install -y curl tar xz; then
+                echo "安装依赖失败"
+                exit 1
+            fi
             ;;
         *)
             echo "不支持的系统类型，请手动安装 curl, tar, xz"
             exit 1
             ;;
     esac
+    
+    # 再次检查工具是否安装成功
+    if ! check_required_tools; then
+        echo "依赖安装后仍有工具缺失，请手动安装"
+        exit 1
+    fi
+    echo "依赖安装完成"
 }
 
 download_and_install_binary() {
@@ -104,18 +151,35 @@ download_and_install_binary() {
     fi
     echo "最新版本: $LATEST_RELEASE"
 
-    BIN_NAME="shadowsocks-v${LATEST_RELEASE#v}.x86_64-unknown-linux-gnu.tar.xz"
+    # 根据系统类型选择正确的二进制文件
+    if [ "$SYSTEM_TYPE" = "alpine" ]; then
+        BIN_NAME="shadowsocks-v${LATEST_RELEASE#v}.x86_64-unknown-linux-musl.tar.xz"
+    else
+        BIN_NAME="shadowsocks-v${LATEST_RELEASE#v}.x86_64-unknown-linux-gnu.tar.xz"
+    fi
     BIN_URL="https://github.com/shadowsocks/shadowsocks-rust/releases/download/$LATEST_RELEASE/$BIN_NAME"
 
-    echo "下载 shadowsocks-rust 二进制文件..."
-    curl -L -o shadowsocks.tar.xz "$BIN_URL"
+    echo "下载 shadowsocks-rust 二进制文件 ($BIN_NAME)..."
+    if ! curl -L -o shadowsocks.tar.xz "$BIN_URL"; then
+        echo "下载失败，请检查网络连接或版本信息"
+        exit 1
+    fi
 
     echo "解压 shadowsocks-rust..."
     mkdir -p shadowsocks-temp
-    tar -xJf shadowsocks.tar.xz -C shadowsocks-temp
+    if ! tar -xJf shadowsocks.tar.xz -C shadowsocks-temp; then
+        echo "解压失败，文件可能损坏"
+        rm -rf shadowsocks-temp shadowsocks.tar.xz
+        exit 1
+    fi
 
     # 修复：正确处理二进制文件路径
     mkdir -p "$BIN_DIR"
+    if [ ! -f "shadowsocks-temp/ssserver" ]; then
+        echo "错误：解压后未找到 ssserver 二进制文件"
+        rm -rf shadowsocks-temp shadowsocks.tar.xz
+        exit 1
+    fi
     cp shadowsocks-temp/ssserver "$BIN_PATH"
     chmod +x "$BIN_PATH"
 
@@ -125,6 +189,8 @@ download_and_install_binary() {
     if [ -f /proc/sys/net/ipv6/bindv6only ]; then
         sysctl -w net.ipv6.bindv6only=0 2>/dev/null || true
     fi
+    
+    echo "shadowsocks-rust 二进制文件安装完成"
 }
 
 create_systemd_service() {
@@ -302,7 +368,31 @@ prompt_for_port_method_password_dns() {
     # 端口
     while true; do
         read -p "请输入端口号: " port
-        [[ "$port" =~ ^[0-9]+$ ]] && break || echo "输入端口号错误，请输入数字"
+        if [[ ! "$port" =~ ^[0-9]+$ ]]; then
+            echo "输入端口号错误，请输入数字"
+            continue
+        fi
+        if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+            echo "端口号必须在 1-65535 范围内"
+            continue
+        fi
+        # 检查端口是否已被占用
+        if netstat -tuln 2>/dev/null | grep -q ":$port "; then
+            echo "警告：端口 $port 可能已被占用"
+            read -p "是否继续使用此端口？(y/n): " continue_port
+            if [[ ! "$continue_port" =~ ^[Yy]$ ]]; then
+                continue
+            fi
+        fi
+        # 检查配置文件是否已存在
+        if [ -f "$CONFIG_DIR/config_$port.json" ]; then
+            echo "警告：端口 $port 的配置文件已存在"
+            read -p "是否覆盖现有配置？(y/n): " overwrite_config
+            if [[ ! "$overwrite_config" =~ ^[Yy]$ ]]; then
+                continue
+            fi
+        fi
+        break
     done
 
     # 加密方式
@@ -371,6 +461,18 @@ do_install() {
     if [[ "$MULTI" =~ ^[Yy]$ ]]; then
         echo "请输入多个端口，用空格分隔（例 8388 8389）:"
         read -a ports
+
+        # 验证所有端口
+        for port in "${ports[@]}"; do
+            if [[ ! "$port" =~ ^[0-9]+$ ]]; then
+                echo "错误：端口 '$port' 不是有效数字"
+                exit 1
+            fi
+            if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+                echo "错误：端口 $port 必须在 1-65535 范围内"
+                exit 1
+            fi
+        done
 
         declare -a passwords
         declare -a methods
@@ -496,6 +598,8 @@ do_uninstall() {
         
         # 根据系统类型检查服务是否存在
         service_exists=false
+        config_exists=false
+        
         case "$SYSTEM_TYPE" in
             alpine)
                 if [ -f "/etc/init.d/$service_name" ]; then
@@ -503,14 +607,19 @@ do_uninstall() {
                 fi
                 ;;
             debian|redhat)
-                if systemctl list-unit-files | grep -qw "$service_name.service"; then
+                if [ -f "/etc/systemd/system/$service_name.service" ]; then
                     service_exists=true
                 fi
                 ;;
         esac
         
-        if [ "$service_exists" = false ]; then
-            echo "未发现端口 $port 的服务，确认重新输入？(y/n)"
+        # 检查配置文件是否存在
+        if [ -f "$CONFIG_DIR/config_$port.json" ]; then
+            config_exists=true
+        fi
+        
+        if [ "$service_exists" = false ] && [ "$config_exists" = false ]; then
+            echo "未发现端口 $port 的服务或配置文件，确认重新输入？(y/n)"
             read -r yn
             if [[ "$yn" != "y" && "$yn" != "Y" ]]; then
                 echo "退出卸载"
@@ -518,7 +627,11 @@ do_uninstall() {
             fi
             continue
         fi
-        remove_service_and_config "$port"
+        
+        if [ "$service_exists" = true ] || [ "$config_exists" = true ]; then
+            echo "找到端口 $port 的配置，开始卸载..."
+            remove_service_and_config "$port"
+        fi
         break
     done
 }
