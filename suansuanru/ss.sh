@@ -4,9 +4,24 @@ set -e
 SERVICE_BASE_NAME="shadowsocks-rust"
 CONFIG_DIR="/etc/shadowsocks-rust"
 BIN_DIR="/usr/local/bin"
-BIN_PATH="$BIN_DIR/shadowsocks"
+BIN_PATH="$BIN_DIR/ssserver"
 
-# 生成密码函数（和校验保持你脚本中逻辑）
+# 检测系统类型
+detect_system() {
+    if [ -f /etc/alpine-release ]; then
+        echo "alpine"
+    elif [ -f /etc/debian_version ]; then
+        echo "debian"
+    elif [ -f /etc/redhat-release ]; then
+        echo "redhat"
+    else
+        echo "unknown"
+    fi
+}
+
+SYSTEM_TYPE=$(detect_system)
+
+# 生成密码函数
 generate_password() {
     local method="$1"
     local length
@@ -56,10 +71,30 @@ validate_password() {
     return 0
 }
 
-download_and_install_binary() {
+install_dependencies() {
     echo "更新软件包索引，安装依赖..."
-    apt update
-    apt install -y curl tar xz-utils
+    case "$SYSTEM_TYPE" in
+        alpine)
+            apk update
+            apk add --no-cache curl tar xz
+            ;;
+        debian)
+            apt update
+            apt install -y curl tar xz-utils
+            ;;
+        redhat)
+            yum update -y
+            yum install -y curl tar xz
+            ;;
+        *)
+            echo "不支持的系统类型，请手动安装 curl, tar, xz"
+            exit 1
+            ;;
+    esac
+}
+
+download_and_install_binary() {
+    install_dependencies
 
     echo "获取 shadowsocks-rust 最新版本信息..."
     LATEST_RELEASE=$(curl -sL https://api.github.com/repos/shadowsocks/shadowsocks-rust/releases/latest | grep '"tag_name"' | head -n1 | cut -d '"' -f4)
@@ -79,12 +114,72 @@ download_and_install_binary() {
     mkdir -p shadowsocks-temp
     tar -xJf shadowsocks.tar.xz -C shadowsocks-temp
 
-    mv shadowsocks-temp "$BIN_PATH"
+    # 修复：正确处理二进制文件路径
+    mkdir -p "$BIN_DIR"
+    cp shadowsocks-temp/ssserver "$BIN_PATH"
     chmod +x "$BIN_PATH"
 
     rm -rf shadowsocks-temp shadowsocks.tar.xz
 
-    sysctl -w net.ipv6.bindv6only=0
+    # 设置网络参数（如果支持）
+    if [ -f /proc/sys/net/ipv6/bindv6only ]; then
+        sysctl -w net.ipv6.bindv6only=0 2>/dev/null || true
+    fi
+}
+
+create_systemd_service() {
+    local port=$1
+    local config_path=$2
+    local service_name="${SERVICE_BASE_NAME}_${port}"
+    
+    cat > "/etc/systemd/system/$service_name.service" <<EOF
+[Unit]
+Description=Shadowsocks-rust proxy server - port $port
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=$BIN_PATH -c $config_path
+Restart=on-failure
+User=nobody
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reload
+    systemctl enable --now "$service_name"
+    echo "systemd 服务 $service_name 启动成功"
+}
+
+create_openrc_service() {
+    local port=$1
+    local config_path=$2
+    local service_name="${SERVICE_BASE_NAME}_${port}"
+    local service_file="/etc/init.d/$service_name"
+    
+    cat > "$service_file" <<EOF
+#!/sbin/openrc-run
+
+name="Shadowsocks-rust proxy server - port $port"
+description="Shadowsocks-rust proxy server"
+command="$BIN_PATH"
+command_args="-c $config_path"
+command_user="nobody"
+pidfile="/var/run/\${RC_SVCNAME}.pid"
+command_background="yes"
+
+depend() {
+    need net
+    after firewall
+}
+EOF
+
+    chmod +x "$service_file"
+    rc-update add "$service_name" default
+    rc-service "$service_name" start
+    echo "OpenRC 服务 $service_name 启动成功"
 }
 
 create_service_and_config() {
@@ -125,36 +220,58 @@ EOF
 EOF
     fi
 
+    # 根据系统类型创建服务
+    case "$SYSTEM_TYPE" in
+        alpine)
+            create_openrc_service "$port" "$config_path"
+            ;;
+        debian|redhat)
+            create_systemd_service "$port" "$config_path"
+            ;;
+        *)
+            echo "警告：未知系统类型，无法创建系统服务"
+            echo "配置文件已创建：$config_path"
+            echo "请手动运行：$BIN_PATH -c $config_path"
+            ;;
+    esac
+}
+
+remove_systemd_service() {
+    local port=$1
     local service_name="${SERVICE_BASE_NAME}_${port}"
-    cat > "/etc/systemd/system/$service_name.service" <<EOF
-[Unit]
-Description=Shadowsocks-rust proxy server - port $port
-After=network.target
-
-[Service]
-Type=simple
-ExecStart=$BIN_PATH/ssserver -c $config_path
-Restart=on-failure
-User=nobody
-LimitNOFILE=65535
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
+    
+    echo "停止并禁用 systemd 服务 $service_name"
+    systemctl stop "$service_name" 2>/dev/null || true
+    systemctl disable "$service_name" 2>/dev/null || true
+    rm -f "/etc/systemd/system/$service_name.service"
     systemctl daemon-reload
-    systemctl enable --now "$service_name"
-    echo "服务 $service_name 启动成功"
+}
+
+remove_openrc_service() {
+    local port=$1
+    local service_name="${SERVICE_BASE_NAME}_${port}"
+    
+    echo "停止并禁用 OpenRC 服务 $service_name"
+    rc-service "$service_name" stop 2>/dev/null || true
+    rc-update del "$service_name" default 2>/dev/null || true
+    rm -f "/etc/init.d/$service_name"
 }
 
 remove_service_and_config() {
     local port=$1
-    local service_name="${SERVICE_BASE_NAME}_${port}"
-    echo "停止并禁用服务 $service_name"
-    systemctl stop "$service_name" || true
-    systemctl disable "$service_name" || true
-    rm -f "/etc/systemd/system/$service_name.service"
-    systemctl daemon-reload
+    
+    # 根据系统类型删除服务
+    case "$SYSTEM_TYPE" in
+        alpine)
+            remove_openrc_service "$port"
+            ;;
+        debian|redhat)
+            remove_systemd_service "$port"
+            ;;
+        *)
+            echo "警告：未知系统类型，请手动停止服务"
+            ;;
+    esac
 
     local config_path="$CONFIG_DIR/config_$port.json"
     echo "删除配置文件 $config_path"
@@ -170,6 +287,8 @@ show_usage() {
 install  - 首次安装 shadowsocks-rust 并配置一个或多个端口
 add      - 新增一个端口配置与服务
 uninstall- 卸载指定端口服务和配置
+
+支持系统: Alpine Linux, Debian/Ubuntu, CentOS/RHEL
 
 示例:
   $0 install
@@ -243,6 +362,7 @@ prompt_for_port_method_password_dns() {
 }
 
 do_install() {
+    echo "检测到系统类型: $SYSTEM_TYPE"
     download_and_install_binary
 
     read -p "是否配置多个端口？(y/n，默认n): " MULTI
@@ -258,8 +378,6 @@ do_install() {
 
         for port in "${ports[@]}"; do
             echo -e "\n配置端口: $port"
-            # 使用提示，要求手动输入密码/方法/DNS：
-            # 也可以复用 prompt_for_port_method_password_dns 但此处端口已知，简单处理：
 
             echo "选择加密方式:"
             echo "1) chacha20-poly1305"
@@ -321,7 +439,7 @@ do_install() {
         echo
         echo "安装完成，配置端口信息如下："
         for i in "${!ports[@]}"; do
-            echo "[$i] 端口：${ports[$i]}"
+            echo "[$((i+1))] 端口：${ports[$i]}"
             echo "    加密方式：${methods[$i]}"
             echo "    密码：${passwords[$i]}"
             echo "    DNS：${dns_values[$i]:-(system default)}"
@@ -331,20 +449,12 @@ do_install() {
     else
         # 单端口快速配置
         echo
-        #port=0; method=""; pwd=""; dns_value=""
-        #mapfile -t arr < <(prompt_for_port_method_password_dns)
-        #port="${arr[0]}"
-        #method="${arr[1]}"
-        #pwd="${arr[2]}"
-        #dns_value="${arr[3]}"
         prompt_for_port_method_password_dns
         port="$PROMPT_PORT"
         method="$PROMPT_METHOD"
         pwd="$PROMPT_PWD"
         dns_value="$PROMPT_DNS"
 
-
-        # download_and_install_binary
         create_service_and_config "$port" "$method" "$pwd" "$dns_value"
 
         echo
@@ -358,7 +468,13 @@ do_install() {
 do_add() {
     echo "添加新端口配置"
 
-    read -r port method pwd dns_value <<< "$(prompt_for_port_method_password_dns)"
+    # 修复：正确调用函数
+    prompt_for_port_method_password_dns
+    port="$PROMPT_PORT"
+    method="$PROMPT_METHOD"
+    pwd="$PROMPT_PWD"
+    dns_value="$PROMPT_DNS"
+    
     create_service_and_config "$port" "$method" "$pwd" "$dns_value"
 
     echo
@@ -377,7 +493,23 @@ do_uninstall() {
             continue
         fi
         service_name="${SERVICE_BASE_NAME}_${port}"
-        if ! systemctl list-unit-files | grep -qw "$service_name.service"; then
+        
+        # 根据系统类型检查服务是否存在
+        service_exists=false
+        case "$SYSTEM_TYPE" in
+            alpine)
+                if [ -f "/etc/init.d/$service_name" ]; then
+                    service_exists=true
+                fi
+                ;;
+            debian|redhat)
+                if systemctl list-unit-files | grep -qw "$service_name.service"; then
+                    service_exists=true
+                fi
+                ;;
+        esac
+        
+        if [ "$service_exists" = false ]; then
             echo "未发现端口 $port 的服务，确认重新输入？(y/n)"
             read -r yn
             if [[ "$yn" != "y" && "$yn" != "Y" ]]; then
