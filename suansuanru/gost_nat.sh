@@ -49,6 +49,8 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
+echo "gost -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port &" >> /root/gost.sh
+
 
 }
 
@@ -62,6 +64,8 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
+echo "gost -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port &" >> /root/gost.sh
+
 }
 
 function run_ws_luodi(){
@@ -74,6 +78,8 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" >> /dev/null 2>&1 &" >> /root/gost.cmd
+echo "gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" &" >> /root/gost.cmd
+
 }
 
 function run_wss_zz(){
@@ -86,6 +92,8 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
+echo "gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port &" >> /root/gost.cmd
+
 }
 
 function run_wss_luodi(){
@@ -103,6 +111,35 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" >> /dev/null 2>&1 &" >> /root/gost.cmd
+echo "gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" &" >> /root/gost.cmd
+
+}
+
+function set_service(){
+echo '[Unit]
+Description=Multi-port Gost server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/root/gost.sh
+Restart=always
+RestartSec=5                       # 5 秒后重启
+TimeoutStartSec=30
+KillMode=process                   # 杀掉脚本时也会一并杀掉子进程
+# 如果你希望 log 到 journal，就不要 redirect，systemd 会自动接管 stdout/stderr
+
+[Install]
+WantedBy=multi-user.target' > /etc/systemd/system/gost.service
+systemctl daemon-reload
+systemctl enable gost.service
+systemctl start gost.service
+echo '
+systemctl start gost.service      启动服务
+systemctl restart gost.service    重启服务
+systemctl status gost.service     服务状态
+journalctl -u gost.service -f     详细日志
+'
 }
 
 function what_to_do(){
@@ -113,6 +150,7 @@ function what_to_do(){
   echo -e "[3] ws隧道落地设置"
   echo -e "[4] wss隧道中转设置"
   echo -e "[5] wss隧道落地设置"
+  echo -e "[6] 设置服务自启动"
   echo -e "注意: 同一则转发，中转与落地传输类型必须对应！"
   echo -e "此功能只需在中转机设置"
   echo -e "-----------------------------------"
@@ -127,6 +165,8 @@ function what_to_do(){
     run_wss_zz
   elif [ "$dowhat" == "5" ]; then
     run_wss_luodi
+  elif [ "$dowhat" == "6" ]; then
+    set_service
   else
     echo "输入错误"
     exit
