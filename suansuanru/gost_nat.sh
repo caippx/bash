@@ -78,7 +78,7 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" >> /dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" &" >> /root/gost.cmd
+echo "gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" &" >> /root/gost.sh
 
 }
 
@@ -92,7 +92,7 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port &" >> /root/gost.cmd
+echo "gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port &" >> /root/gost.sh
 
 }
 
@@ -111,11 +111,12 @@ a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
 echo "nohup gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" >> /dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" &" >> /root/gost.cmd
+echo "gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" &" >> /root/gost.sh
 
 }
 
 function set_service(){
+chmod +x /root/gost.sh
 echo '[Unit]
 Description=Multi-port Gost server
 After=network.target
