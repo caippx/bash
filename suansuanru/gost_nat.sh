@@ -117,6 +117,23 @@ echo "gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_ce
 
 function set_service(){
 chmod +x /root/gost.sh
+# 检查开头是否包含 #!/bin/bash
+if ! head -n 1 "$FILE" | grep -qx '#!/bin/bash'; then
+    echo "添加 #!/bin/bash 到文件开头..."
+    sed -i '1i#!/bin/bash' "$FILE"
+fi
+
+# 检查是否包含 set -e
+if ! grep -qx 'set -e' "$FILE"; then
+    echo "添加 set -e 到文件开头的第二行..."
+    sed -i '2iset -e' "$FILE"
+fi
+
+# 检查末尾是否有 wait
+if ! tail -n 1 "$FILE" | grep -qx 'wait'; then
+    echo "在文件末尾追加 wait..."
+    echo "wait" >> "$FILE"
+fi
 echo '[Unit]
 Description=Multi-port Gost server
 After=network.target
