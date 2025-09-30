@@ -2,10 +2,10 @@
 
 function install_gost(){
 
-if command -v curl >/dev/null 2>&1 && command -v wget >/dev/null 2>&1; then
+if command -v curl >/dev/null 2>&1 && command -v wget >/dev/null 2>&1 && killall -v wget >/dev/null 2>&1; then
     echo "curl 和 wget 均已安装"
 else
-    apt update -y && apt install curl wget -y
+    apt update -y && apt install curl wget psmisc -y
 fi
 
 if curl --connect-timeout 5 -s https://github.com > /dev/null 2>&1; then
@@ -150,6 +150,7 @@ KillMode=process                   # 杀掉脚本时也会一并杀掉子进程
 
 [Install]
 WantedBy=multi-user.target' > /etc/systemd/system/gost.service
+killall -9 gost
 systemctl daemon-reload
 systemctl enable gost.service
 systemctl start gost.service
