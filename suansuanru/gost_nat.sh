@@ -117,6 +117,7 @@ echo "gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_ce
 
 function set_service(){
 chmod +x /root/gost.sh
+FILE="gost.sh"
 # 检查开头是否包含 #!/bin/bash
 if ! head -n 1 "$FILE" | grep -qx '#!/bin/bash'; then
     echo "添加 #!/bin/bash 到文件开头..."
