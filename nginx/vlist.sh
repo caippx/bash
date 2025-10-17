@@ -3,6 +3,7 @@
 mkdir -p /www/vList/ && cd /www/vList/
 wget https://raw.githubusercontent.com/MoeClub/vList/refs/heads/master/index.html
 wget https://github.com/MoeClub/vList/raw/refs/heads/master/amd64/linux/vList
+chmod +x vList
 echo '
 {
   "WorkFolder": "/data",
