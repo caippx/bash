@@ -25,12 +25,14 @@ deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security/ buster-security ma
 EOF
 
 官方
-deb http://deb.debian.org/debian/ buster main non-free contrib
-deb http://deb.debian.org/debian-security buster/updates main
-deb http://deb.debian.org/debian/ buster-updates main non-free contrib
-deb http://deb.debian.org/debian/ buster-backports main non-free contrib
+cat > /etc/apt/sources.list << EOF
+deb http://archive.debian.org/debian/ buster main non-free contrib
+deb http://archive.debian.org/debian-security buster/updates main
+deb http://archive.debian.org/debian/ buster-updates main non-free contrib
+deb http://archive.debian.org/debian/ buster-backports main non-free contrib
 
-deb-src http://deb.debian.org/debian-security buster/updates main
-deb-src http://deb.debian.org/debian/ buster main non-free contrib
-deb-src http://deb.debian.org/debian/ buster-updates main non-free contrib
-deb-src http://deb.debian.org/debian/ buster-backports main non-free contrib
+deb-src http://archive.debian.org/debian-security buster/updates main
+deb-src http://archive.debian.org/debian/ buster main non-free contrib
+deb-src http://archive.debian.org/debian/ buster-updates main non-free contrib
+deb-src http://archive.debian.org/debian/ buster-backports main non-free contrib
+EOF
