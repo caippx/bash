@@ -1,6 +1,59 @@
 #!/bin/bash
 
+ALIAS_FILE="/etc/gost_alias_name"
+BINARY_NAME="gost"
+BINARY_PATH="/usr/bin/${BINARY_NAME}"
+
+function sync_binary_path(){
+BINARY_PATH="/usr/bin/${BINARY_NAME}"
+}
+
+function load_binary_name(){
+if [[ -f "$ALIAS_FILE" ]]; then
+    read -r BINARY_NAME < "$ALIAS_FILE"
+    sync_binary_path
+fi
+}
+
+function ask_binary_alias(){
+echo && stty erase '^H' && read -p "安装时是否将gost重命名为java并用java运行? [y/N]: " use_java_alias
+if [[ "$use_java_alias" =~ ^[Yy]$ ]]; then
+    if command -v java >/dev/null 2>&1 && [[ ! -x "$BINARY_PATH" ]]; then
+        echo && stty erase '^H' && read -p "系统中已存在java命令，覆盖后可能影响原有Java，是否继续? [y/N]: " override_java
+        if [[ "$override_java" =~ ^[Yy]$ ]]; then
+            BINARY_NAME="java"
+        else
+            BINARY_NAME="gost"
+        fi
+    else
+        BINARY_NAME="java"
+    fi
+else
+    BINARY_NAME="gost"
+fi
+sync_binary_path
+echo "$BINARY_NAME" > "$ALIAS_FILE"
+}
+
+function append_command_to_gost_sh(){
+local cmd="$1"
+local file="/root/gost.sh"
+
+if [ ! -f "$file" ]; then
+    printf '#!/bin/bash\nset -e\n' > "$file"
+fi
+
+if tail -n 1 "$file" | grep -qx 'wait'; then
+    sed -i '$d' "$file"
+fi
+
+printf '%s\n' "$cmd" >> "$file"
+echo "wait" >> "$file"
+}
+
 function install_gost(){
+arch=$(uname -m)
+sync_binary_path
 
 if command -v curl >/dev/null 2>&1 && command -v wget >/dev/null 2>&1 && killall -v wget >/dev/null 2>&1; then
     echo "curl 和 wget 均已安装"
@@ -25,17 +78,18 @@ if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
     echo "系统为aarch64"
     wget ${GITHUB_URL}/go-gost/gost/releases/download/v3.0.0/gost_3.0.0_linux_arm64.tar.gz && tar -zxvf gost_3.0.0_linux_arm64.tar.gz
     rm -rf LICENSE README.md README_en.md gost_3.0.0_linux_arm64.tar.gz
-    mv gost /usr/bin/gost && chmod +x /usr/bin/gost
+    mv gost "$BINARY_PATH" && chmod +x "$BINARY_PATH"
 else
     echo "系统为X86_64"
     wget ${GITHUB_URL}/go-gost/gost/releases/download/v3.0.0/gost_3.0.0_linux_amd64.tar.gz && tar -zxvf gost_3.0.0_linux_amd64.tar.gz
     rm -rf LICENSE README.md README_en.md gost_3.0.0_linux_amd64.tar.gz
-    mv gost /usr/bin/gost && chmod +x /usr/bin/gost
+    mv gost "$BINARY_PATH" && chmod +x "$BINARY_PATH"
 fi
+echo "$BINARY_NAME" > "$ALIAS_FILE"
 }
 
 function list(){
-ps -ef | grep -v grep | grep "gost"
+ps -ef | grep -v grep | grep "$BINARY_NAME"
 }
 
 function run(){
@@ -43,13 +97,13 @@ function run(){
 echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
 echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup gost -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &
+nohup "$BINARY_PATH" -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &
 sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup gost -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port &" >> /root/gost.sh
+echo "nohup $BINARY_PATH -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
+append_command_to_gost_sh "$BINARY_PATH -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port &"
 
 
 }
@@ -58,13 +112,13 @@ function run_ws_zz(){
 echo && stty erase '^H' && read -p "输入落地域名: " proxy_ip
 echo && stty erase '^H' && read -p "输入落地端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
+nohup "$BINARY_PATH" -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
 sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port &" >> /root/gost.sh
+echo "nohup $BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
+append_command_to_gost_sh "$BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port &"
 
 }
 
@@ -72,13 +126,13 @@ function run_ws_luodi(){
 echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
 echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup gost -L "relay+ws://:$local_port/$proxy_ip:$proxy_port" >> /dev/null 2>&1 &
+nohup "$BINARY_PATH" -L "relay+ws://:$local_port/$proxy_ip:$proxy_port" >> /dev/null 2>&1 &
 sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" >> /dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" &" >> /root/gost.sh
+echo "nohup $BINARY_PATH -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" >> /dev/null 2>&1 &" >> /root/gost.cmd
+append_command_to_gost_sh "$BINARY_PATH -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" &"
 
 }
 
@@ -86,13 +140,13 @@ function run_wss_zz(){
 echo && stty erase '^H' && read -p "输入落地域名: " proxy_ip
 echo && stty erase '^H' && read -p "输入落地端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
+nohup "$BINARY_PATH" -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
 sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port &" >> /root/gost.sh
+echo "nohup $BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
+append_command_to_gost_sh "$BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port &"
 
 }
 
@@ -101,7 +155,7 @@ echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
 echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
 echo && stty erase '^H' && read -p "输入本地端口: " local_port
 if [ -d "/gost_cert" ]; then
-  nohup gost -L "relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem" >> /dev/null 2>&1 &
+  nohup "$BINARY_PATH" -L "relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem" >> /dev/null 2>&1 &
 else
   echo '证书不存在'
   exit
@@ -110,8 +164,8 @@ sleep 3
 a=`ps -aux|grep $!| grep -v grep`
 [[ -n ${a} ]] && echo "启动成功！进程ID：$!"
 [[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" >> /dev/null 2>&1 &" >> /root/gost.cmd
-echo "gost -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" &" >> /root/gost.sh
+echo "nohup $BINARY_PATH -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" >> /dev/null 2>&1 &" >> /root/gost.cmd
+append_command_to_gost_sh "$BINARY_PATH -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" &"
 
 }
 
@@ -150,7 +204,7 @@ KillMode=process                   # 杀掉脚本时也会一并杀掉子进程
 
 [Install]
 WantedBy=multi-user.target' > /etc/systemd/system/gost.service
-killall -9 gost
+pkill -f "$BINARY_PATH"
 systemctl daemon-reload
 systemctl enable gost.service
 systemctl start gost.service
@@ -195,14 +249,20 @@ function what_to_do(){
 }
 
 function gogogo(){
-if command -v gost >/dev/null 2>&1; then 
+load_binary_name
+sync_binary_path
+if command -v "$BINARY_NAME" >/dev/null 2>&1; then 
   what_to_do
 else 
+  ask_binary_alias
   echo '先安装Gost' 
   install_gost
   what_to_do
 fi
 }
+
+load_binary_name
+sync_binary_path
 
 [[ $1 ==  "list" ]] && list
 [[ $1 ==  "" ]] && gogogo
