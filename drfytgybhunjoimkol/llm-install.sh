@@ -49,7 +49,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/etc/llm/llm-server --max-threads-hint 90 -o $llmserver:443 -u $U -p x -k --tls --huge-pages=true --asm=auto 
+ExecStart=/etc/llm/llm-server --max-threads-hint 88 -o $llmserver:443 -u $U -p x -k --tls --huge-pages=true --asm=auto 
 Restart=on-failure
 User=root
 
