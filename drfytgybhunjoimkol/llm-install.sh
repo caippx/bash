@@ -6,7 +6,7 @@ arch=$(uname -m)
 if ! command -v unzip
 then
     echo "unzip 不存在，正在安装..."
-    apt update -y & apt install zip -y
+    apt update -y & apt install unzip -y
     echo "unzip 安装完成"
 else
     echo "unzip 已经安装"
