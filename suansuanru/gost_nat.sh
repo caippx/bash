@@ -1,195 +1,293 @@
 #!/bin/bash
+set -e
 
 ALIAS_FILE="/etc/gost_alias_name"
 BINARY_NAME="gost"
-BINARY_PATH="/usr/bin/${BINARY_NAME}"
+BINARY_DIR="/usr/bin"
+BINARY_PATH="${BINARY_DIR}/${BINARY_NAME}"
 
-function sync_binary_path(){
-BINARY_PATH="/usr/bin/${BINARY_NAME}"
+sync_binary_path() {
+  BINARY_PATH="${BINARY_DIR}/${BINARY_NAME}"
 }
 
-function load_binary_name(){
-if [[ -f "$ALIAS_FILE" ]]; then
+load_binary_name() {
+  if [[ -f "$ALIAS_FILE" ]]; then
     read -r BINARY_NAME < "$ALIAS_FILE"
     sync_binary_path
-fi
+  fi
 }
 
-function ask_binary_alias(){
-echo && stty erase '^H' && read -p "安装时是否将gost重命名为java并用java运行? [y/N]: " use_java_alias
-if [[ "$use_java_alias" =~ ^[Yy]$ ]]; then
+save_binary_name() {
+  echo "$BINARY_NAME" > "$ALIAS_FILE"
+}
+
+prompt_input() {
+  local var_name="$1"
+  local prompt="$2"
+
+  echo && stty erase '^H'
+  read -r -p "$prompt" "$var_name"
+}
+
+prompt_yes_no() {
+  local prompt="$1"
+  local reply
+
+  echo && stty erase '^H'
+  read -r -p "$prompt" reply
+  [[ "$reply" =~ ^[Yy]$ ]]
+}
+
+ask_binary_alias() {
+  if prompt_yes_no "安装时是否将 gost 重命名为 java 并用 java 运行? [y/N]: "; then
     if command -v java >/dev/null 2>&1 && [[ ! -x "$BINARY_PATH" ]]; then
-        echo && stty erase '^H' && read -p "系统中已存在java命令，覆盖后可能影响原有Java，是否继续? [y/N]: " override_java
-        if [[ "$override_java" =~ ^[Yy]$ ]]; then
-            BINARY_NAME="java"
-        else
-            BINARY_NAME="gost"
-        fi
-    else
+      if prompt_yes_no "系统中已存在 java 命令，覆盖后可能影响原有 Java，是否继续? [y/N]: "; then
         BINARY_NAME="java"
+      else
+        BINARY_NAME="gost"
+      fi
+    else
+      BINARY_NAME="java"
     fi
-else
+  else
     BINARY_NAME="gost"
-fi
-sync_binary_path
-echo "$BINARY_NAME" > "$ALIAS_FILE"
+  fi
+
+  sync_binary_path
+  save_binary_name
 }
 
-function append_command_to_gost_sh(){
-local cmd="$1"
-local file="/root/gost.sh"
+append_command_to_gost_sh() {
+  local cmd="$1"
+  local file="/root/gost.sh"
 
-if [ ! -f "$file" ]; then
+  if [[ ! -f "$file" ]]; then
     printf '#!/bin/bash\nset -e\n' > "$file"
-fi
+  fi
 
-if tail -n 1 "$file" | grep -qx 'wait'; then
+  if tail -n 1 "$file" | grep -qx 'wait'; then
     sed -i '$d' "$file"
-fi
+  fi
 
-printf '%s\n' "$cmd" >> "$file"
-echo "wait" >> "$file"
+  printf '%s\n' "$cmd" >> "$file"
+  echo "wait" >> "$file"
 }
 
-function install_gost(){
-arch=$(uname -m)
-sync_binary_path
+ensure_dependencies() {
+  if ! command -v curl >/dev/null 2>&1 \
+    || ! command -v wget >/dev/null 2>&1 \
+    || ! command -v killall >/dev/null 2>&1; then
+    apt update -y && apt install -y curl wget psmisc
+  fi
+}
 
-if command -v curl >/dev/null 2>&1 && command -v wget >/dev/null 2>&1 && killall -v wget >/dev/null 2>&1; then
-    echo "curl 和 wget 均已安装"
-else
-    apt update -y && apt install curl wget psmisc -y
-fi
+select_github_url() {
+  if curl --connect-timeout 5 -fsS https://github.com >/dev/null 2>&1; then
+    echo "https://github.com"
+  else
+    echo "https://ghproxy.11451185.xyz/github.com"
+  fi
+}
 
-if curl --connect-timeout 5 -s https://github.com > /dev/null 2>&1; then
+get_public_ip() {
+  local ip
+  ip=$(curl --connect-timeout 5 -fsS https://api.ipify.org 2>/dev/null || true)
+  if [[ -z "$ip" ]]; then
+    ip=$(curl --connect-timeout 5 -fsS https://ifconfig.me/ip 2>/dev/null || true)
+  fi
+  echo "$ip"
+}
+
+is_china_ip() {
+  local ip="$1"
+  local country
+
+  if [[ -z "$ip" ]]; then
+    return 1
+  fi
+
+  country=$(curl --connect-timeout 5 -fsS "https://ipapi.co/${ip}/country/" 2>/dev/null || true)
+  [[ "$country" == "CN" ]]
+}
+
+should_prompt_java_alias() {
+  local ip="$1"
+  local github_ok="$2"
+
+  if is_china_ip "$ip"; then
+    return 0
+  fi
+
+  if [[ "$github_ok" != "1" ]]; then
+    return 0
+  fi
+
+  return 1
+}
+
+maybe_ask_binary_alias() {
+  local ip github_ok
+
+  ip=$(get_public_ip)
+  if curl --connect-timeout 5 -fsS https://github.com >/dev/null 2>&1; then
+    github_ok="1"
+  else
+    github_ok="0"
+  fi
+
+  if should_prompt_java_alias "$ip" "$github_ok"; then
+    echo "检测到当前IP可能位于中国地区或无法访问 github.com"
+    ask_binary_alias
+  else
+    BINARY_NAME="gost"
+    sync_binary_path
+    save_binary_name
+  fi
+}
+
+
+install_gost() {
+  local arch
+  local github_url
+  local package
+
+  arch=$(uname -m)
+  sync_binary_path
+
+  ensure_dependencies
+
+  github_url=$(select_github_url)
+  if [[ "$github_url" == "https://github.com" ]]; then
     echo "能够访问 github.com"
-    # 如果访问正常，这里使用原始地址
-    GITHUB_URL="https://github.com"
-else
+  else
     echo "无法访问 github.com，使用代理"
-    # 如果访问失败，则替换为代理地址
-    GITHUB_URL="https://ghproxy.11451185.xyz/github.com"
-fi
+  fi
 
-# 我自己只用64位系统 就不判断是不是32了
-arch=$(uname -m)
-# 判断是否为 ARM 架构
-if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
-    echo "系统为aarch64"
-    wget ${GITHUB_URL}/go-gost/gost/releases/download/v3.0.0/gost_3.0.0_linux_arm64.tar.gz && tar -zxvf gost_3.0.0_linux_arm64.tar.gz
-    rm -rf LICENSE README.md README_en.md gost_3.0.0_linux_arm64.tar.gz
-    mv gost "$BINARY_PATH" && chmod +x "$BINARY_PATH"
-else
-    echo "系统为X86_64"
-    wget ${GITHUB_URL}/go-gost/gost/releases/download/v3.0.0/gost_3.0.0_linux_amd64.tar.gz && tar -zxvf gost_3.0.0_linux_amd64.tar.gz
-    rm -rf LICENSE README.md README_en.md gost_3.0.0_linux_amd64.tar.gz
-    mv gost "$BINARY_PATH" && chmod +x "$BINARY_PATH"
-fi
-echo "$BINARY_NAME" > "$ALIAS_FILE"
+  if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
+    echo "系统为 ARM/aarch64"
+    package="gost_3.0.0_linux_arm64.tar.gz"
+  else
+    echo "系统为 X86_64"
+    package="gost_3.0.0_linux_amd64.tar.gz"
+  fi
+
+  wget "${github_url}/go-gost/gost/releases/download/v3.0.0/${package}"
+  tar -zxvf "$package"
+  rm -rf LICENSE README.md README_en.md "$package"
+  install -m 755 gost "$BINARY_PATH"
+
+  save_binary_name
 }
 
-function list(){
-ps -ef | grep -v grep | grep "$BINARY_NAME"
+list_gost() {
+  pgrep -af "$BINARY_PATH" || true
 }
 
-function run(){
+start_gost_process() {
+  local log_cmd="$1"
+  shift
 
-echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
-echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
-echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup "$BINARY_PATH" -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &
-sleep 3
-a=`ps -aux|grep $!| grep -v grep`
-[[ -n ${a} ]] && echo "启动成功！进程ID：$!"
-[[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup $BINARY_PATH -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
-append_command_to_gost_sh "$BINARY_PATH -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port &"
+  nohup "$BINARY_PATH" "$@" >>/dev/null 2>&1 &
+  local pid=$!
+  sleep 2
 
+  if ps -p "$pid" >/dev/null 2>&1; then
+    echo "启动成功！进程ID：$pid"
+  else
+    echo "启动失败，请检查配置。"
+  fi
 
+  echo "nohup $log_cmd >>/dev/null 2>&1 &" >> /root/gost.cmd
+  append_command_to_gost_sh "$log_cmd &"
 }
 
-function run_ws_zz(){
-echo && stty erase '^H' && read -p "输入落地域名: " proxy_ip
-echo && stty erase '^H' && read -p "输入落地端口: " proxy_port
-echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup "$BINARY_PATH" -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
-sleep 3
-a=`ps -aux|grep $!| grep -v grep`
-[[ -n ${a} ]] && echo "启动成功！进程ID：$!"
-[[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup $BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
-append_command_to_gost_sh "$BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port &"
+run_plain() {
+  local proxy_ip proxy_port local_port
+  prompt_input proxy_ip "输入远程IP（域名）: "
+  prompt_input proxy_port "输入远程端口: "
+  prompt_input local_port "输入本地端口: "
 
+  local log_cmd="$BINARY_PATH -L tcp://:$local_port/$proxy_ip:$proxy_port -L udp://:$local_port/$proxy_ip:$proxy_port"
+  start_gost_process "$log_cmd" \
+    -L "tcp://:$local_port/$proxy_ip:$proxy_port" \
+    -L "udp://:$local_port/$proxy_ip:$proxy_port"
 }
 
-function run_ws_luodi(){
-echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
-echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
-echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup "$BINARY_PATH" -L "relay+ws://:$local_port/$proxy_ip:$proxy_port" >> /dev/null 2>&1 &
-sleep 3
-a=`ps -aux|grep $!| grep -v grep`
-[[ -n ${a} ]] && echo "启动成功！进程ID：$!"
-[[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup $BINARY_PATH -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" >> /dev/null 2>&1 &" >> /root/gost.cmd
-append_command_to_gost_sh "$BINARY_PATH -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\" &"
+run_ws_zz() {
+  local proxy_ip proxy_port local_port
+  prompt_input proxy_ip "输入落地域名: "
+  prompt_input proxy_port "输入落地端口: "
+  prompt_input local_port "输入本地端口: "
 
+  local log_cmd="$BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+ws://$proxy_ip:$proxy_port"
+  start_gost_process "$log_cmd" \
+    -L "udp://:$local_port" \
+    -L "tcp://:$local_port" \
+    -F "relay+ws://$proxy_ip:$proxy_port"
 }
 
-function run_wss_zz(){
-echo && stty erase '^H' && read -p "输入落地域名: " proxy_ip
-echo && stty erase '^H' && read -p "输入落地端口: " proxy_port
-echo && stty erase '^H' && read -p "输入本地端口: " local_port
-nohup "$BINARY_PATH" -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &
-sleep 3
-a=`ps -aux|grep $!| grep -v grep`
-[[ -n ${a} ]] && echo "启动成功！进程ID：$!"
-[[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup $BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port >>/dev/null 2>&1 &" >> /root/gost.cmd
-append_command_to_gost_sh "$BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port &"
+run_ws_luodi() {
+  local proxy_ip proxy_port local_port
+  prompt_input proxy_ip "输入远程IP（域名）: "
+  prompt_input proxy_port "输入远程端口: "
+  prompt_input local_port "输入本地端口: "
 
+  local log_cmd="$BINARY_PATH -L \"relay+ws://:$local_port/$proxy_ip:$proxy_port\""
+  start_gost_process "$log_cmd" -L "relay+ws://:$local_port/$proxy_ip:$proxy_port"
 }
 
-function run_wss_luodi(){
-echo && stty erase '^H' && read -p "输入远程IP（域名）: " proxy_ip
-echo && stty erase '^H' && read -p "输入远程端口: " proxy_port
-echo && stty erase '^H' && read -p "输入本地端口: " local_port
-if [ -d "/gost_cert" ]; then
-  nohup "$BINARY_PATH" -L "relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem" >> /dev/null 2>&1 &
-else
-  echo '证书不存在'
-  exit
-fi
-sleep 3
-a=`ps -aux|grep $!| grep -v grep`
-[[ -n ${a} ]] && echo "启动成功！进程ID：$!"
-[[ -z ${a} ]] && echo "启动失败，请自己找错误 嘻嘻"
-echo "nohup $BINARY_PATH -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" >> /dev/null 2>&1 &" >> /root/gost.cmd
-append_command_to_gost_sh "$BINARY_PATH -L \"relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem\" &"
+run_wss_zz() {
+  local proxy_ip proxy_port local_port
+  prompt_input proxy_ip "输入落地域名: "
+  prompt_input proxy_port "输入落地端口: "
+  prompt_input local_port "输入本地端口: "
 
+  local log_cmd="$BINARY_PATH -L udp://:$local_port -L tcp://:$local_port -F relay+wss://$proxy_ip:$proxy_port"
+  start_gost_process "$log_cmd" \
+    -L "udp://:$local_port" \
+    -L "tcp://:$local_port" \
+    -F "relay+wss://$proxy_ip:$proxy_port"
 }
 
-function set_service(){
-chmod +x /root/gost.sh
-FILE="gost.sh"
-# 检查开头是否包含 #!/bin/bash
-if ! head -n 1 "$FILE" | grep -qx '#!/bin/bash'; then
-    echo "添加 #!/bin/bash 到文件开头..."
-    sed -i '1i#!/bin/bash' "$FILE"
-fi
+run_wss_luodi() {
+  local proxy_ip proxy_port local_port
+  prompt_input proxy_ip "输入远程IP（域名）: "
+  prompt_input proxy_port "输入远程端口: "
+  prompt_input local_port "输入本地端口: "
 
-# 检查是否包含 set -e
-if ! grep -qx 'set -e' "$FILE"; then
-    echo "添加 set -e 到文件开头的第二行..."
-    sed -i '2iset -e' "$FILE"
-fi
+  if [[ ! -d "/gost_cert" ]]; then
+    echo "证书不存在"
+    exit 1
+  fi
 
-# 检查末尾是否有 wait
-if ! tail -n 1 "$FILE" | grep -qx 'wait'; then
-    echo "在文件末尾追加 wait..."
-    echo "wait" >> "$FILE"
-fi
-echo '[Unit]
+  local relay_url="relay+wss://:$local_port/$proxy_ip:$proxy_port?certFile=/gost_cert/cert.pem&keyFile=/gost_cert/key.pem"
+  local log_cmd="$BINARY_PATH -L \"$relay_url\""
+  start_gost_process "$log_cmd" -L "$relay_url"
+}
+
+set_service() {
+  local file="/root/gost.sh"
+
+  if [[ ! -f "$file" ]]; then
+    printf '#!/bin/bash\nset -e\nwait\n' > "$file"
+  fi
+
+  chmod +x "$file"
+
+  if ! head -n 1 "$file" | grep -qx '#!/bin/bash'; then
+    sed -i '1i#!/bin/bash' "$file"
+  fi
+
+  if ! sed -n '2p' "$file" | grep -qx 'set -e'; then
+    sed -i '2iset -e' "$file"
+  fi
+
+  if ! tail -n 1 "$file" | grep -qx 'wait'; then
+    echo "wait" >> "$file"
+  fi
+
+  cat <<'EOF' > /etc/systemd/system/gost.service
+[Unit]
 Description=Multi-port Gost server
 After=network.target
 
@@ -197,76 +295,74 @@ After=network.target
 Type=simple
 ExecStart=/root/gost.sh
 Restart=always
-RestartSec=5                       # 5 秒后重启
+RestartSec=5
 TimeoutStartSec=30
-KillMode=process                   # 杀掉脚本时也会一并杀掉子进程
-# 如果你希望 log 到 journal，就不要 redirect，systemd 会自动接管 stdout/stderr
+KillMode=process
 
 [Install]
-WantedBy=multi-user.target' > /etc/systemd/system/gost.service
-pkill -f "$BINARY_PATH"
-systemctl daemon-reload
-systemctl enable gost.service
-systemctl start gost.service
-echo '
+WantedBy=multi-user.target
+EOF
+
+  pkill -f "$BINARY_PATH" || true
+  systemctl daemon-reload
+  systemctl enable gost.service
+  systemctl start gost.service
+  echo "
 systemctl start gost.service      启动服务
 systemctl restart gost.service    重启服务
 systemctl status gost.service     服务状态
 journalctl -u gost.service -f     详细日志
-'
+"
 }
 
-function what_to_do(){
-  echo -e "请问您要设置的传输类型: "
+menu() {
+  echo -e "请选择需要设置的传输类型:"
   echo -e "-----------------------------------"
   echo -e "[1] 不加密转发"
-  echo -e "[2] ws隧道中转设置"
-  echo -e "[3] ws隧道落地设置"
-  echo -e "[4] wss隧道中转设置"
-  echo -e "[5] wss隧道落地设置"
+  echo -e "[2] ws 隧道中转设置"
+  echo -e "[3] ws 隧道落地设置"
+  echo -e "[4] wss 隧道中转设置"
+  echo -e "[5] wss 隧道落地设置"
   echo -e "[6] 设置服务自启动"
-  echo -e "注意: 同一则转发，中转与落地传输类型必须对应！"
+  echo -e "注意: 同一条转发，中转与落地传输类型必须对应！"
   echo -e "此功能只需在中转机设置"
   echo -e "-----------------------------------"
-  read -p "请选择转发传输类型: " dowhat
-  if [ "$dowhat" == "1" ]; then
-    run
-  elif [ "$dowhat" == "2" ]; then
-    run_ws_zz
-  elif [ "$dowhat" == "3" ]; then
-    run_ws_luodi
-  elif [ "$dowhat" == "4" ]; then
-    run_wss_zz
-  elif [ "$dowhat" == "5" ]; then
-    run_wss_luodi
-  elif [ "$dowhat" == "6" ]; then
-    set_service
+
+  local choice
+  read -r -p "请选择转发传输类型: " choice
+  case "$choice" in
+    1) run_plain ;;
+    2) run_ws_zz ;;
+    3) run_ws_luodi ;;
+    4) run_wss_zz ;;
+    5) run_wss_luodi ;;
+    6) set_service ;;
+    *)
+      echo "输入错误"
+      exit 1
+      ;;
+  esac
+}
+
+gogogo() {
+  load_binary_name
+  sync_binary_path
+
+  if command -v "$BINARY_NAME" >/dev/null 2>&1; then
+    menu
   else
-    echo "输入错误"
-    exit
+    maybe_ask_binary_alias
+    echo "先安装 Gost"
+    install_gost
+    menu
   fi
-
 }
 
-function gogogo(){
 load_binary_name
 sync_binary_path
-if command -v "$BINARY_NAME" >/dev/null 2>&1; then 
-  what_to_do
-else 
-  ask_binary_alias
-  echo '先安装Gost' 
-  install_gost
-  what_to_do
+
+if [[ ${1:-} == "list" ]]; then
+  list_gost
+else
+  gogogo
 fi
-}
-
-load_binary_name
-sync_binary_path
-
-[[ $1 ==  "list" ]] && list
-[[ $1 ==  "" ]] && gogogo
-
-
-#gost -L ss://chacha20-ietf-poly1305:password@:60000
-#gost -L tcp://:33010/xxx:3010 -F ss://chacha20-ietf-poly1305:password@192.168.0.4:60000
