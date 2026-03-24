@@ -180,7 +180,7 @@ install_gost() {
 }
 
 list_gost() {
-  pgrep -af "$BINARY_PATH" || true
+  pgrep -af "$BINARY_NAME" || true
 }
 
 start_gost_process() {
