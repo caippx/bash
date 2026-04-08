@@ -90,8 +90,8 @@ cat > /etc/docker/daemon.json <<EOF
   }
   $( [ "$IN_CHINA" = true ] && echo ',
   "registry-mirrors": [
-    "https://registry.docker-cn.com",
-    "https://docker.mirrors.ustc.edu.cn"
+    "https://docker.mirrors.sjtug.sjtu.edu.cn",
+    "https://docker.nju.edu.cn"
   ]' )
 }
 EOF
