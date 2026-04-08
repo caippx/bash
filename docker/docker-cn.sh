@@ -1,71 +1,134 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-echo "🚀 Debian 13 (Trixie) Docker 国内一键安装脚本"
-echo "---------------------------------------------"
+############################################
+# 基础函数
+############################################
+msg() { echo -e "\033[1;32m[INFO]\033[0m $*"; }
+warn() { echo -e "\033[1;33m[WARN]\033[0m $*"; }
+err() { echo -e "\033[1;31m[ERR ]\033[0m $*"; exit 1; }
 
-# 必须 root
-if [ "$(id -u)" -ne 0 ]; then
-  echo "❌ 请使用 root 用户或 sudo 运行此脚本"
-  exit 1
+############################################
+# Root 检查
+############################################
+[ "$(id -u)" -eq 0 ] || err "请使用 root 或 sudo 执行"
+
+############################################
+# 系统检测
+############################################
+. /etc/os-release || err "无法读取系统信息"
+
+msg "系统: $NAME"
+msg "系统ID: $ID"
+msg "版本代号: ${VERSION_CODENAME:-unknown}"
+
+[[ "$ID" == "debian" || "$ID" == "ubuntu" ]] || err "仅支持 Debian / Ubuntu"
+
+# Debian testing 兜底
+if [ -z "${VERSION_CODENAME:-}" ] && [ "$ID" = "debian" ]; then
+  VERSION_CODENAME="trixie"
+  warn "未检测到 Debian 代号，默认使用 trixie"
 fi
 
-# 基础依赖
-echo "📦 安装基础依赖..."
+############################################
+# 判断是否中国大陆
+############################################
+msg "判断服务器网络位置..."
+COUNTRY=$(curl -fsSL https://ipinfo.io/country 2>/dev/null || true)
+
+if [ "$COUNTRY" = "CN" ]; then
+  IN_CHINA=true
+  msg "检测到中国大陆网络"
+else
+  IN_CHINA=false
+  msg "检测到海外网络（或无法判断）"
+fi
+
+############################################
+# 基础工具
+############################################
+msg "安装基础依赖..."
 apt update
 apt install -y ca-certificates curl gnupg lsb-release
 
-# Docker GPG Key（阿里云）
-echo "🔑 添加 Docker GPG Key（阿里云）..."
-mkdir -p /etc/apt/keyrings
-curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/debian/gpg \
-  | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-chmod a+r /etc/apt/keyrings/docker.gpg
+############################################
+# Docker 安装
+############################################
+if [ "$IN_CHINA" = true ]; then
+  msg "使用阿里云 Docker APT 源"
 
-# Docker 阿里云 APT 源（Debian 13 = trixie）
-echo "📡 添加 Docker APT 源（阿里云）..."
-cat > /etc/apt/sources.list.d/docker.list <<EOF
+  mkdir -p /etc/apt/keyrings
+  curl -fsSL https://mirrors.aliyun.com/docker-ce/linux/$ID/gpg \
+    | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  chmod a+r /etc/apt/keyrings/docker.gpg
+
+  cat > /etc/apt/sources.list.d/docker.list <<EOF
 deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-https://mirrors.aliyun.com/docker-ce/linux/debian trixie stable
+https://mirrors.aliyun.com/docker-ce/linux/$ID \
+$VERSION_CODENAME stable
 EOF
 
-# 安装 Docker
-echo "🐳 安装 Docker..."
-apt update
-apt install -y \
-  docker-ce \
-  docker-ce-cli \
-  containerd.io \
-  docker-buildx-plugin \
-  docker-compose-plugin
+  apt update
+  apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+else
+  msg "使用 Docker 官方脚本"
+  curl -fsSL https://get.docker.com | bash
+fi
 
-# 开机启动
-systemctl enable docker
-systemctl start docker
-
-# 镜像加速
-echo "⚡ 配置 Docker 镜像加速..."
+############################################
+# Docker 基础配置（通用）
+############################################
+msg "配置 Docker 参数"
 mkdir -p /etc/docker
+
 cat > /etc/docker/daemon.json <<EOF
 {
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m",
+    "max-file": "5"
+  }
+  $( [ "$IN_CHINA" = true ] && echo ',
   "registry-mirrors": [
     "https://registry.docker-cn.com",
     "https://docker.mirrors.ustc.edu.cn"
-  ]
+  ]' )
 }
 EOF
 
 systemctl daemon-reexec
+systemctl enable docker
 systemctl restart docker
 
-# 普通用户免 sudo
-if [ -n "$SUDO_USER" ]; then
-  echo "👤 添加用户 $SUDO_USER 到 docker 用户组..."
-  usermod -aG docker "$SUDO_USER"
-fi
+############################################
+# 内核 & 系统优化（容器推荐）
+############################################
+msg "应用系统优化参数"
 
-# 验证
-echo "✅ Docker 安装完成，版本信息："
+cat > /etc/sysctl.d/99-docker.conf <<EOF
+net.ipv4.ip_forward=1
+net.bridge.bridge-nf-call-iptables=1
+net.bridge.bridge-nf-call-ip6tables=1
+fs.inotify.max_user_instances=8192
+fs.inotify.max_user_watches=1048576
+vm.overcommit_memory=1
+EOF
+
+sysctl --system >/dev/null
+
+############################################
+# 文件描述符优化
+############################################
+cat > /etc/security/limits.d/docker.conf <<EOF
+* soft nofile 1048576
+* hard nofile 1048576
+EOF
+
+############################################
+# 安装验证
+############################################
+msg "Docker 版本信息"
 docker version
 
-echo "🎉 安装成功！重新登录即可免 sudo 使用 docker"
+msg "✅ 所有步骤完成！"
+msg "✅ docker安装成功"
