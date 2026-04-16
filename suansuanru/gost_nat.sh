@@ -5,15 +5,30 @@ ALIAS_FILE="/etc/gost_alias_name"
 BINARY_NAME="gost"
 BINARY_DIR="/usr/bin"
 BINARY_PATH="${BINARY_DIR}/${BINARY_NAME}"
+GH_PROXY_PREFIX="https://ghproxy.11451185.xyz/"
+CMD_FILE="/root/gost.cmd"
+START_SCRIPT="/root/gost.sh"
+SERVICE_NAME="gost"
+SERVICE_FILE="/etc/systemd/system/gost.service"
+PROCESS_MATCH_PATTERN="${BINARY_DIR}/${BINARY_NAME}"
 
 sync_binary_path() {
   BINARY_PATH="${BINARY_DIR}/${BINARY_NAME}"
+}
+
+sync_runtime_names() {
+  CMD_FILE="/root/${BINARY_NAME}.cmd"
+  START_SCRIPT="/root/${BINARY_NAME}.sh"
+  SERVICE_NAME="${BINARY_NAME}"
+  SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
+  PROCESS_MATCH_PATTERN="${BINARY_PATH}"
 }
 
 load_binary_name() {
   if [[ -f "$ALIAS_FILE" ]]; then
     read -r BINARY_NAME < "$ALIAS_FILE"
     sync_binary_path
+    sync_runtime_names
   fi
 }
 
@@ -39,8 +54,8 @@ prompt_yes_no() {
 }
 
 ask_binary_alias() {
-  if prompt_yes_no "安装时是否将 gost 重命名为 java 并用 java 运行? [y/N]: "; then
-    if command -v java >/dev/null 2>&1 && [[ ! -x "$BINARY_PATH" ]]; then
+  if prompt_yes_no "检测到当前服务器位于中国大陆或无法访问 github.com，是否将 gost 伪装为 java 进程名运行? [y/N]: "; then
+    if command -v java >/dev/null 2>&1 && [[ "$(command -v java)" != "$BINARY_PATH" ]]; then
       if prompt_yes_no "系统中已存在 java 命令，覆盖后可能影响原有 Java，是否继续? [y/N]: "; then
         BINARY_NAME="java"
       else
@@ -54,12 +69,13 @@ ask_binary_alias() {
   fi
 
   sync_binary_path
+  sync_runtime_names
   save_binary_name
 }
 
 append_command_to_gost_sh() {
   local cmd="$1"
-  local file="/root/gost.sh"
+  local file="$START_SCRIPT"
 
   if [[ ! -f "$file" ]]; then
     printf '#!/bin/bash\nset -e\n' > "$file"
@@ -81,12 +97,19 @@ ensure_dependencies() {
   fi
 }
 
+proxy_github_url() {
+  local url="$1"
+  echo "${GH_PROXY_PREFIX}${url#https://}"
+}
+
 select_github_url() {
   if curl --connect-timeout 5 -fsS https://github.com >/dev/null 2>&1; then
-    echo "https://github.com"
+    echo "能够访问 github.com，下载仍使用代理地址"
   else
-    echo "https://ghproxy.11451185.xyz/github.com"
-  fi
+    echo "无法访问 github.com，使用代理地址"
+  fi >&2
+
+  proxy_github_url "https://github.com"
 }
 
 get_public_ip() {
@@ -136,11 +159,11 @@ maybe_ask_binary_alias() {
   fi
 
   if should_prompt_java_alias "$ip" "$github_ok"; then
-    echo "检测到当前IP可能位于中国地区或无法访问 github.com"
     ask_binary_alias
   else
     BINARY_NAME="gost"
     sync_binary_path
+    sync_runtime_names
     save_binary_name
   fi
 }
@@ -153,15 +176,11 @@ install_gost() {
 
   arch=$(uname -m)
   sync_binary_path
+  sync_runtime_names
 
   ensure_dependencies
 
   github_url=$(select_github_url)
-  if [[ "$github_url" == "https://github.com" ]]; then
-    echo "能够访问 github.com"
-  else
-    echo "无法访问 github.com，使用代理"
-  fi
 
   if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
     echo "系统为 ARM/aarch64"
@@ -171,7 +190,7 @@ install_gost() {
     package="gost_3.0.0_linux_amd64.tar.gz"
   fi
 
-  wget "${github_url}/go-gost/gost/releases/download/v3.0.0/${package}"
+  wget -O "$package" "${github_url}/go-gost/gost/releases/download/v3.0.0/${package}"
   tar -zxvf "$package"
   rm -rf LICENSE README.md README_en.md "$package"
   install -m 755 gost "$BINARY_PATH"
@@ -180,7 +199,7 @@ install_gost() {
 }
 
 list_gost() {
-  pgrep -af "$BINARY_NAME" || true
+  pgrep -af "$PROCESS_MATCH_PATTERN" || true
 }
 
 start_gost_process() {
@@ -195,9 +214,10 @@ start_gost_process() {
     echo "启动成功！进程ID：$pid"
   else
     echo "启动失败，请检查配置。"
+    return 1
   fi
 
-  echo "nohup $log_cmd >>/dev/null 2>&1 &" >> /root/gost.cmd
+  echo "nohup $log_cmd >>/dev/null 2>&1 &" >> "$CMD_FILE"
   append_command_to_gost_sh "$log_cmd &"
 }
 
@@ -266,7 +286,7 @@ run_wss_luodi() {
 }
 
 set_service() {
-  local file="/root/gost.sh"
+  local file="$START_SCRIPT"
 
   if [[ ! -f "$file" ]]; then
     printf '#!/bin/bash\nset -e\nwait\n' > "$file"
@@ -286,14 +306,14 @@ set_service() {
     echo "wait" >> "$file"
   fi
 
-  cat <<'EOF' > /etc/systemd/system/gost.service
+  cat <<EOF > "$SERVICE_FILE"
 [Unit]
 Description=Multi-port Gost server
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/root/gost.sh
+ExecStart=$START_SCRIPT
 Restart=always
 RestartSec=5
 TimeoutStartSec=30
@@ -303,15 +323,19 @@ KillMode=process
 WantedBy=multi-user.target
 EOF
 
-  pkill -f "$BINARY_PATH" || true
+  pkill -f "$PROCESS_MATCH_PATTERN" || true
   systemctl daemon-reload
-  systemctl enable gost.service
-  systemctl start gost.service
+  systemctl enable "$SERVICE_NAME.service"
+  if systemctl is-active --quiet "$SERVICE_NAME.service"; then
+    systemctl restart "$SERVICE_NAME.service"
+  else
+    systemctl start "$SERVICE_NAME.service"
+  fi
   echo "
-systemctl start gost.service      启动服务
-systemctl restart gost.service    重启服务
-systemctl status gost.service     服务状态
-journalctl -u gost.service -f     详细日志
+systemctl start $SERVICE_NAME.service      启动服务
+systemctl restart $SERVICE_NAME.service    重启服务
+systemctl status $SERVICE_NAME.service     服务状态
+journalctl -u $SERVICE_NAME.service -f     详细日志
 "
 }
 
@@ -347,6 +371,7 @@ menu() {
 gogogo() {
   load_binary_name
   sync_binary_path
+  sync_runtime_names
 
   if command -v "$BINARY_NAME" >/dev/null 2>&1; then
     menu
@@ -360,6 +385,7 @@ gogogo() {
 
 load_binary_name
 sync_binary_path
+sync_runtime_names
 
 if [[ ${1:-} == "list" ]]; then
   list_gost
