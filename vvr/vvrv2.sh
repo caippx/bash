@@ -6,7 +6,7 @@
 [ ! -f "/lib/modules/$(uname -r)/kernel/net/ipv4/tcp_bbr.ko" ] && echo "Not Support BBR by Default." && echo "默认不支持BBR 请切换支持BBR的内核" && exit 1
 
 installDep=()
-for dep in $(echo "gcc,make,curl" |sed 's/,/\n/g'); do command -v "${dep}" >/dev/null || installDep+=("${dep}"); done
+for dep in $(echo "gcc,make,openssl,keyutils" |sed 's/,/\n/g'); do command -v "${dep}" >/dev/null || installDep+=("${dep}"); done
 ls -1 "/usr/src" |grep -q "^linux-headers-$(uname -r)" || installDep+=("linux-headers-$(uname -r)")
 
 if [ "${#installDep[@]}" -gt 0 ]; then
@@ -32,11 +32,13 @@ fi
 kernelVer=$(uname -r |cut -d- -f1 |cut -d. -f1-2)
 [ ! -n "${kernelVer}" ] && echo "No Found Kernel Version." && echo "无法识别内核版本." && exit 1
 
-wget -qO /tmp/tcp_bbr.c "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/net/ipv4/tcp_bbr.c?h=v${kernelVer}"
-[ $? -ne 0 ] && echo "Invalid Kernel Version." && echo "不支持的内核版本" && exit 1
+downloadOK=0
+[ "$downloadOK" == "0" ] && wget --no-check-certificate --timeout=10 -qO /tmp/tcp_bbr.c "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/net/ipv4/tcp_bbr.c?h=v${kernelVer}"
+[ $? -eq 0 ] && downloadOK=1
+[ "$downloadOK" == "0" ] && wget --no-check-certificate --timeout=10 -qO /tmp/tcp_bbr.c "https://ghproxy.11451185.xyz/raw.githubusercontent.com/torvalds/linux/refs/tags/v${kernelVer}/net/ipv4/tcp_bbr.c"
+[ $? -eq 0 ] && downloadOK=1
+[ "$downloadOK" -ne "1" ] && echo "Invalid Kernel Version." && exit 1
 
-wget -qO /tmp/Makefile "${GITHUB_URL}raw.githubusercontent.com/caippx/bash/master/vvr/v2/Makefile"
-[ $? -ne 0 ] && echo "Invalid Make File." && echo "编译文件下载错误" && exit 1
 
 
 # bbr_min_rtt_win_sec
