@@ -265,12 +265,12 @@ compile_module() {
         exit 1
     fi
     echo "
-      net.ipv4.tcp_no_metrics_save=1
-      fs.file-max = 104857600
-      fs.nr_open = 1048576
-      vm.overcommit_memory = 1
-      vm.swappiness = 10
-    " >> /etc/sysctl.conf
+net.ipv4.tcp_no_metrics_save=1
+fs.file-max = 104857600
+fs.nr_open = 1048576
+vm.overcommit_memory = 1
+vm.swappiness = 10
+" >> /etc/sysctl.conf
     log_success "Module compiled successfully"
 }
 
