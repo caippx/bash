@@ -184,13 +184,13 @@ install_gost() {
 
   if [[ "$arch" == "arm"* || "$arch" == "aarch64" ]]; then
     echo "系统为 ARM/aarch64"
-    package="gost_3.0.0_linux_arm64.tar.gz"
+    package="gost_3.2.6_linux_arm64.tar.gz"
   else
     echo "系统为 X86_64"
-    package="gost_3.0.0_linux_amd64.tar.gz"
+    package="gost_3.2.6_linux_amd64.tar.gz"
   fi
 
-  wget -O "$package" "${github_url}/go-gost/gost/releases/download/v3.0.0/${package}"
+  wget -O "$package" "${github_url}/go-gost/gost/releases/download/v3.2.6/${package}"
   tar -zxvf "$package"
   rm -rf LICENSE README.md README_en.md "$package"
   install -m 755 gost "$BINARY_PATH"
