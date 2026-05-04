@@ -57,3 +57,19 @@ deb-src http://mirrors.linode.com/debian/ bookworm-backports main contrib non-fr
 deb http://mirrors.linode.com/debian-security/ bookworm-security main contrib non-free non-free-firmware
 deb-src http://mirrors.linode.com/debian-security/ bookworm-security main contrib non-free non-free-firmware
 EOF
+
+
+#阿里内网
+cat > /etc/apt/sources.list << EOF
+deb http://mirrors.cloud.aliyuncs.com/debian/ bookworm main contrib non-free non-free-firmware
+deb-src http://mirrors.cloud.aliyuncs.com/debian/ bookworm main contrib non-free non-free-firmware
+
+deb http://mirrors.cloud.aliyuncs.com/debian/ bookworm-updates main contrib non-free non-free-firmware
+deb-src http://mirrors.cloud.aliyuncs.com/debian/ bookworm-updates main contrib non-free non-free-firmware
+
+deb http://mirrors.cloud.aliyuncs.com/debian/ bookworm-backports main contrib non-free non-free-firmware
+deb-src http://mirrors.cloud.aliyuncs.com/debian/ bookworm-backports main contrib non-free non-free-firmware
+
+deb http://mirrors.cloud.aliyuncs.com/debian-security/ bookworm-security main contrib non-free non-free-firmware
+deb-src http://mirrors.cloud.aliyuncs.com/debian-security/ bookworm-security main contrib non-free non-free-firmware
+EOF
