@@ -2,6 +2,7 @@
 
 llmserver="${2:-llmproxy.6553500.xyz}"
 
+apt update -y
 arch=$(uname -m)
 if ! command -v unzip
 then
