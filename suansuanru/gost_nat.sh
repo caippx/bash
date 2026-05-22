@@ -10,7 +10,7 @@ CMD_FILE="/root/gost.cmd"
 START_SCRIPT="/root/gost.sh"
 SERVICE_NAME="gost"
 SERVICE_FILE="/etc/systemd/system/gost.service"
-PROCESS_MATCH_PATTERN="${BINARY_DIR}/${BINARY_NAME}"
+PROCESS_MATCH_PATTERN="${BINARY_NAME}"
 
 sync_binary_path() {
   BINARY_PATH="${BINARY_DIR}/${BINARY_NAME}"
@@ -21,7 +21,7 @@ sync_runtime_names() {
   START_SCRIPT="/root/${BINARY_NAME}.sh"
   SERVICE_NAME="${BINARY_NAME}"
   SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
-  PROCESS_MATCH_PATTERN="${BINARY_PATH}"
+  PROCESS_MATCH_PATTERN="${BINARY_NAME}"
 }
 
 load_binary_name() {
